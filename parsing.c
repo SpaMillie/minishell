@@ -1,11 +1,117 @@
+
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+// #define TRUE 1
+// #define FALSE 0
 
 typedef struct s_mini
 {
-    char **line;
+    char **metaed;
 }   t_mini;
 
-int ch_count(char *s, t_mini *line)
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != '\0')
+		i++;
+	return (i);
+}
+
+size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
+{
+	size_t	srcsize;
+	size_t	i;
+
+	i = 0;
+	srcsize = ft_strlen(src);
+	if (dstsize > 0)
+	{
+		while (i + 1 < dstsize && i < srcsize)
+		{
+			dst[i] = src[i];
+			i++;
+		}
+		dst[i] = '\0';
+	}
+	return (srcsize);
+}
+
+char	*ft_strdup(const char *s1)
+{
+	char	*s1_cpy;
+	int		i;
+
+	i = 0;
+	while (s1[i] != '\0')
+		i++;
+	s1_cpy = (char *)malloc(i + 1);
+	if (s1_cpy == NULL)
+		return (NULL);
+	i = 0;
+	while (s1[i] != '\0')
+	{
+		s1_cpy[i] = (char)s1[i];
+		i++;
+	}
+	s1_cpy[i] = '\0';
+	return (s1_cpy);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char			*sub_s;
+	size_t			str_len;
+
+	if (s == 0)
+		return (0);
+	str_len = ft_strlen(s);
+	if (str_len < start)
+		return (ft_strdup(""));
+	if (len > str_len - start)
+		len = str_len - start;
+	sub_s = (char *)malloc(len + 1);
+	if (sub_s == NULL)
+		return (NULL);
+	ft_strlcpy(sub_s, s + start, len + 1);
+	return (sub_s);
+}
+
+// char	*minishell_substr(char *s, int strt, size_t len)
+// {
+// 	char	*sub_s;
+// 	char	c;
+
+// 	if (s[strt] == '\'' || s[strt] == '\"')
+// 	{
+// 		c = s[strt];
+// 		if (s[len] == c)
+// 			strt += 1;
+// 	}
+// 	sub_s = (char *)malloc(len + 1);
+// 	if (sub_s == NULL)
+// 		//malloc_error
+// 	ft_strlcpy(sub_s, s + strt, len + 1);
+// 	return (sub_s);
+// }
+
+int ft_skip(char *s, int i)
+{
+    char    c;
+
+    c = s[i];
+    i++;
+    while (s && s[i] != c)
+        i++;
+    if (s[i] == c)
+        return (i + 1);
+    else
+        return (-1);
+}
+
+int ch_count(char *s)
 {
     int i;
     int chunks;
@@ -16,33 +122,81 @@ int ch_count(char *s, t_mini *line)
     {
         if (s[i] == '\'' || s[i] == '\"')
         {
-            i = ft_skip(s, i)
+            i = ft_skip(s, i);
+            if (i == -1)
+                return (-1);
         }
+        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+            i++;
+        else
+            while (s && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
+                s[i] != '\'' && s[i] != '\"')
+                i++;
+        chunks++;
     }
+    return (chunks);
 }
 
-int split_meta(char *argv, t_mini *line)
+void    split_meta(char *s, t_mini *line)
+{
+    int i;
+    int j;
+    int prev_i;
+
+    i = 0;
+    j = 0;
+    while (s)
+    {
+        prev_i = i;
+        if (s[i] == '\'' || s[i] == '\"')
+            i = ft_skip(s, i);
+        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+            i++;
+        else
+            while (s && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
+                s[i] != '\'' && s[i] != '\"')
+                i++;
+        if (prev_i != i)
+        {
+            line->metaed[j++] = ft_substr(s, prev_i, i);
+            if (line->metaed[j - 1] == NULL)
+                printf("malloc error\n");
+        }
+    }
+    line->metaed[j] = NULL;
+}
+
+int first_split(char *argv, t_mini *line)
 {
     int chunks;
 
-    chunks = ch_count(argv, line);
+    chunks = ch_count(argv);
+    line->metaed = (char **)malloc(sizeof(chunks + 1));
+    if (!line->metaed)
+        return (-1); //malloc_error
+    split_meta(argv, line);
+    return (0);
 }
 
-int split(char *argv, t_mini *line)
+void parse(char *argv, t_mini *line)
 {
     int check;
 
-    check = split_meta(argv, line);
+    check = first_split(argv, line);
     if (check == -1)
-        //heredoc
-    split_words(line);
+        printf("error\n");
+    // split_words(line);
 }
 
-
-int main(char *line_read)
+int main(void)
 {
     t_mini  line;
+    char line_read[] = "< infile cat | cat > outfile";
 
-    initialise(line);
+    // initialise(line);
+    line = (t_mini){0};
     parse(line_read, &line);
+    int i = 0;
+    while (line.metaed[i] != NULL)
+        printf("%s\n", line.metaed[i++]);
 }
