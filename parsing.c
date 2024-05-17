@@ -39,6 +39,27 @@ size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
 	return (srcsize);
 }
 
+char	*ft_strchr(const char *s, int c)
+{
+	size_t	i;
+	char	*ptr;
+
+	i = 0;
+	ptr = (char *)s;
+	while (ft_strlen(ptr) >= i)
+	{
+		if (ptr[i] == (char)c)
+		{
+			ptr = (char *)&ptr[i];
+			return (ptr);
+		}
+		else
+			i++;
+	}
+	ptr = NULL;
+	return (ptr);
+}
+
 char	*ft_strdup(const char *s1)
 {
 	char	*s1_cpy;
@@ -117,6 +138,7 @@ int ch_count(char *s)
     int chunks;
 
     i = 0;
+    printf("entered chcount\n");
     chunks = 0;
     while(s[i] != '\0')
     {
@@ -129,11 +151,14 @@ int ch_count(char *s)
         else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
             i++;
         else
-            while (s && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
+        {
+            while (s[i] != '\0' && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
                 s[i] != '\'' && s[i] != '\"')
                 i++;
+        }
         chunks++;
     }
+    printf("exited chcount\n");
     return (chunks);
 }
 
@@ -143,49 +168,65 @@ void    split_meta(char *s, t_mini *line)
     int j;
     int prev_i;
 
+    printf("entered splitmeta\n");
     i = 0;
     j = 0;
     while (s)
     {
         prev_i = i;
-        if (s[i] == '\'' || s[i] == '\"')
-            i = ft_skip(s, i);
-        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
-            i++;
-        else
-            while (s && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
-                s[i] != '\'' && s[i] != '\"')
-                i++;
-        if (prev_i != i)
+        if (s && (s[i] == '\'' || s[i] == '\"'))
         {
+            i = ft_skip(s, i);
             line->metaed[j++] = ft_substr(s, prev_i, i);
-            if (line->metaed[j - 1] == NULL)
-                printf("malloc error\n");
+            printf("should be quotes == %s\n", line->metaed[j - 1]);
         }
+        else if (s[i] != '\0'  && (s[i] == '|' || s[i] == '>' || s[i] == '<'))
+        {
+            line->metaed[j++] = ft_substr(s, i, 1);
+            i++;
+            printf("should be < > | == %s\n", line->metaed[j - 1]);
+        }
+        else
+        {
+            while (s[i] != '\0' && ft_strchr(">|<\'\"", s[i]) == NULL)
+                i++;
+            if (prev_i != i)
+            {
+                printf("i is %d\n", i);
+                line->metaed[j++] = ft_substr(s, prev_i, i - 1);
+                printf("should be else == %s\n", line->metaed[j - 1]);
+            }
+        }
+        if (line->metaed[j - 1] == NULL)
+                printf("malloc error\n"); 
     }
     line->metaed[j] = NULL;
+    printf("exited splitmeta\n");
 }
 
 int first_split(char *argv, t_mini *line)
 {
     int chunks;
 
+    printf("entered firstsplit\n");
     chunks = ch_count(argv);
     line->metaed = (char **)malloc(sizeof(chunks + 1));
     if (!line->metaed)
         return (-1); //malloc_error
     split_meta(argv, line);
+    printf("exited firstsplit\n");
     return (0);
 }
 
 void parse(char *argv, t_mini *line)
 {
     int check;
-
+    printf("entered parse\n");
     check = first_split(argv, line);
     if (check == -1)
         printf("error\n");
     // split_words(line);
+    printf("exited parse\n");
 }
 
 int main(void)
@@ -195,6 +236,7 @@ int main(void)
 
     // initialise(line);
     line = (t_mini){0};
+    printf("%s\n", line_read);
     parse(line_read, &line);
     int i = 0;
     while (line.metaed[i] != NULL)
