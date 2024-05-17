@@ -124,7 +124,7 @@ int ft_skip(char *s, int i)
 
     c = s[i];
     i++;
-    while (s && s[i] != c)
+    while (s[i] != '\0' && s[i] != c)
         i++;
     if (s[i] == c)
         return (i + 1);
@@ -171,34 +171,25 @@ void    split_meta(char *s, t_mini *line)
     printf("entered splitmeta\n");
     i = 0;
     j = 0;
-    while (s)
+    while (s[i] != '\0')
     {
         prev_i = i;
         if (s && (s[i] == '\'' || s[i] == '\"'))
-        {
             i = ft_skip(s, i);
-            line->metaed[j++] = ft_substr(s, prev_i, i);
-            printf("should be quotes == %s\n", line->metaed[j - 1]);
-        }
         else if (s[i] != '\0'  && (s[i] == '|' || s[i] == '>' || s[i] == '<'))
-        {
-            line->metaed[j++] = ft_substr(s, i, 1);
             i++;
-            printf("should be < > | == %s\n", line->metaed[j - 1]);
-        }
         else
         {
             while (s[i] != '\0' && ft_strchr(">|<\'\"", s[i]) == NULL)
                 i++;
-            if (prev_i != i)
-            {
-                printf("i is %d\n", i);
-                line->metaed[j++] = ft_substr(s, prev_i, i - 1);
-                printf("should be else == %s\n", line->metaed[j - 1]);
-            }
         }
-        if (line->metaed[j - 1] == NULL)
-                printf("malloc error\n"); 
+        if (prev_i != i)
+        {
+            printf("i is %d, prev is %d\n", i, prev_i);
+            line->metaed[j++] = ft_substr(s, prev_i, i - prev_i);
+            if (line->metaed[j - 1] == NULL)
+                printf("malloc error\n");
+        }
     }
     line->metaed[j] = NULL;
     printf("exited splitmeta\n");
@@ -232,7 +223,7 @@ void parse(char *argv, t_mini *line)
 int main(void)
 {
     t_mini  line;
-    char line_read[] = "< infile cat | cat > outfile";
+    char line_read[] = "< infile echo 'hey' hoe what |cat > out";
 
     // initialise(line);
     line = (t_mini){0};
