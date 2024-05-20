@@ -132,16 +132,18 @@ int ft_skip(char *s, int i)
         return (-1);
 }
 
-int ch_count(char *s)
+int w_count(char *s)
 {
     int i;
-    int chunks;
+    int words;
 
     i = 0;
     printf("entered chcount\n");
-    chunks = 0;
+    words = 0;
     while(s[i] != '\0')
     {
+        while (s[i] != '\0' && s[i] == 32)
+            i++;
         if (s[i] == '\'' || s[i] == '\"')
         {
             i = ft_skip(s, i);
@@ -152,27 +154,27 @@ int ch_count(char *s)
             i++;
         else
         {
-            while (s[i] != '\0' && s[i] != '|' && s[i] != '>' && s[i] != '<' && \
-                s[i] != '\'' && s[i] != '\"')
+            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
                 i++;
         }
-        chunks++;
+        words++;
     }
     printf("exited chcount\n");
-    return (chunks);
+    return (words);
 }
 
-void    split_meta(char *s, t_mini *line)
+void    minishell_split(char *s, t_mini *line)
 {
     int i;
     int j;
     int prev_i;
 
-    printf("entered splitmeta\n");
     i = 0;
     j = 0;
     while (s[i] != '\0')
     {
+        while (s[i] != '\0' && s[i] == 32)
+                i++;
         prev_i = i;
         if (s && (s[i] == '\'' || s[i] == '\"'))
             i = ft_skip(s, i);
@@ -180,31 +182,29 @@ void    split_meta(char *s, t_mini *line)
             i++;
         else
         {
-            while (s[i] != '\0' && ft_strchr(">|<\'\"", s[i]) == NULL)
+            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
                 i++;
         }
         if (prev_i != i)
         {
-            printf("i is %d, prev is %d\n", i, prev_i);
             line->metaed[j++] = ft_substr(s, prev_i, i - prev_i);
             if (line->metaed[j - 1] == NULL)
                 printf("malloc error\n");
         }
     }
     line->metaed[j] = NULL;
-    printf("exited splitmeta\n");
 }
 
 int first_split(char *argv, t_mini *line)
 {
-    int chunks;
+    int words;
 
     printf("entered firstsplit\n");
-    chunks = ch_count(argv);
-    line->metaed = (char **)malloc(sizeof(chunks + 1));
+    words = w_count(argv);
+    line->metaed = (char **)malloc(sizeof(char *) * (words + 1));
     if (!line->metaed)
         return (-1); //malloc_error
-    split_meta(argv, line);
+    minishell_split(argv, line);
     printf("exited firstsplit\n");
     return (0);
 }
@@ -215,7 +215,7 @@ void parse(char *argv, t_mini *line)
     printf("entered parse\n");
     check = first_split(argv, line);
     if (check == -1)
-        printf("error\n");
+        printf("error\n"); //unfinished quotes
     // split_words(line);
     printf("exited parse\n");
 }
@@ -223,7 +223,7 @@ void parse(char *argv, t_mini *line)
 int main(void)
 {
     t_mini  line;
-    char line_read[] = "< infile echo 'hey' hoe what |cat > out";
+    char line_read[] = "echo 'heyyyy'hey";
 
     // initialise(line);
     line = (t_mini){0};
