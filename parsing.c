@@ -7,8 +7,15 @@
 
 typedef struct s_mini
 {
-    char **metaed;
+    char    **metaed;
 }   t_mini;
+
+typedef struct s_cmnd
+{
+    char    **cmnd;
+    char    *redirect;
+    char    *file_name;
+}   t_cmnd;
 
 size_t	ft_strlen(const char *str)
 {
@@ -195,6 +202,37 @@ void    minishell_split(char *s, t_mini *line)
     line->metaed[j] = NULL;
 }
 
+int p_count(t_mini  *line)
+{
+    int i;
+    int p;
+
+    i = 0;
+    p = 0;
+    while (line->metaed[i] != NULL)
+    {
+        if (line->metaed[i][0] == '|')
+            p++;
+        i++;
+    }
+    return (p);
+}
+
+void    sort_args(t_mini *line)
+{
+    int i;
+    int pipes;
+
+    i = 0;
+    pipes = p_count(line);
+    printf("there are %d pipes\n", pipes);
+    // while (line->metaed[i] != NULL)
+    // {
+        
+    // }
+}
+
+
 int first_split(char *argv, t_mini *line)
 {
     int words;
@@ -205,6 +243,7 @@ int first_split(char *argv, t_mini *line)
     if (!line->metaed)
         return (-1); //malloc_error
     minishell_split(argv, line);
+    sort_args(line);
     printf("exited firstsplit\n");
     return (0);
 }
@@ -223,7 +262,8 @@ void parse(char *argv, t_mini *line)
 int main(void)
 {
     t_mini  line;
-    char line_read[] = "echo 'heyyyy'hey";
+    // t_cmnd  token;
+    char line_read[] = "heyheyhey | vcat gfgf | eufh";
 
     // initialise(line);
     line = (t_mini){0};
