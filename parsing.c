@@ -7,15 +7,17 @@
 
 typedef struct s_mini
 {
-    char    **metaed;
+    char        **metaed;
+    int         pipe_num;
+    t_tokens    *token;
 }   t_mini;
 
-typedef struct s_cmnd
+typedef struct s_tokens
 {
     char    **cmnd;
-    char    *redirect;
-    char    *file_name;
-}   t_cmnd;
+    char    **redirect;
+    char    **file_name;
+}   t_tokens;
 
 size_t	ft_strlen(const char *str)
 {
@@ -107,6 +109,28 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (sub_s);
 }
 
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	i = 0;
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	while (i < n && str1[i] != '\0')
+	{
+		if (str1[i] == str2[i])
+			i++;
+		else
+			return (str1[i] - str2[i]);
+	}
+	if (i < n)
+		return (-str2[i]);
+	return (0);
+}
+
+
 // char	*minishell_substr(char *s, int strt, size_t len)
 // {
 // 	char	*sub_s;
@@ -183,10 +207,14 @@ void    minishell_split(char *s, t_mini *line)
         while (s[i] != '\0' && s[i] == 32)
                 i++;
         prev_i = i;
-        if (s && (s[i] == '\'' || s[i] == '\"'))
+        if (s[i] == '\'' || s[i] == '\"')
             i = ft_skip(s, i);
-        else if (s[i] != '\0'  && (s[i] == '|' || s[i] == '>' || s[i] == '<'))
+        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+        {
+            if ((s[i] == '<' && s[i + 1] == '<') || (s[i] == '>' && s[i + 1] == '>'))
+                i++;
             i++;
+        }
         else
         {
             while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
@@ -202,7 +230,7 @@ void    minishell_split(char *s, t_mini *line)
     line->metaed[j] = NULL;
 }
 
-int p_count(t_mini  *line)
+int ft_redirection(t_mini  *line, int i)
 {
     int i;
     int p;
@@ -221,15 +249,33 @@ int p_count(t_mini  *line)
 void    sort_args(t_mini *line)
 {
     int i;
-    int pipes;
+    int len;
+    int check;
 
     i = 0;
-    pipes = p_count(line);
-    printf("there are %d pipes\n", pipes);
-    // while (line->metaed[i] != NULL)
-    // {
-        
-    // }
+    check = 0;
+    while (line->metaed[i] != NULL)
+    {
+        len = ft_strlen(line->metaed[i]);
+        if (ft_strncmp(line->metaed[i], "|", len) == 0)
+        {
+            if (i == 0)
+                printf("zsh: parse error near '|'\n"); //exit_error; discuss: echo | echo, echo | ; the 2nd example asks for a command (pipe>)
+            line->pipe_num++;
+        }
+        else if (ft_strncmp(line->metaed[i], "<", len) == 0 || \
+            ft_strncmp(line->metaed[i], ">", len) == 0 || \
+            ft_strncmp(line->metaed[i], ">>", len) == 0 || \
+            ft_strncmp(line->metaed[i], "<<", len) == 0)
+            check = ft_redirection(line, i); //needs to become i if not -1
+        else
+            check = ft_save(line, len, i); //needs to be 0 if not -1
+        if (check == -1)
+            print("malloc error\n"); //needs to exit and clean
+        else if (check > 0)
+            i = check;
+        i++;
+    }
 }
 
 
@@ -263,7 +309,7 @@ int main(void)
 {
     t_mini  line;
     // t_cmnd  token;
-    char line_read[] = "heyheyhey | vcat gfgf | eufh";
+    char line_read[] = "heyheyhey < cart > > hayr | vcat gfgf | eufh";
 
     // initialise(line);
     line = (t_mini){0};
