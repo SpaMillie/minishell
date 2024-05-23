@@ -2,4 +2,4 @@ a.out
 .vscode/
 parsing
 parsing.dSYM/
-
+a.out.dSYM/
