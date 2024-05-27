@@ -173,7 +173,7 @@ int w_count(char *s)
     words = 0;
     while(s[i] != '\0')
     {
-        while (s[i] != '\0' && s[i] == 32)
+        while (s[i] != '\0' && s[i] == 32) //add whitespace cchars
             i++;
         if (s[i] == '\'' || s[i] == '\"')
         {
@@ -182,7 +182,11 @@ int w_count(char *s)
                 return (-1);
         }
         else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+        {
+            if (s[i] != '|' && (s[i + 1] == '>' || s[i + 1] == '<'))
+                i++;
             i++;
+        }
         else
         {
             while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
