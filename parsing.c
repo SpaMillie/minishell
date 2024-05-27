@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 // #define TRUE 1
 // #define FALSE 0
 
@@ -18,6 +19,7 @@ typedef struct s_mini
 {
     char        **metaed;
     int         pipe_num;
+    int         redir_num;
 }   t_mini;
 
 size_t	ft_strlen(const char *str)
@@ -169,7 +171,6 @@ int w_count(char *s)
     int words;
 
     i = 0;
-    printf("entered chcount\n");
     words = 0;
     while(s[i] != '\0')
     {
@@ -194,7 +195,6 @@ int w_count(char *s)
         }
         words++;
     }
-    printf("exited chcount\n");
     return (words);
 }
 
@@ -234,22 +234,30 @@ void    minishell_split(char *s, t_mini *line)
     line->metaed[j] = NULL;
 }
 
-// int ft_redirection(t_mini  *line, int i)
-// {
-//     int len;
+int ft_redirection(t_mini  *line, int i)
+{
+    int len;
 
-//     len = ft_strlen(line->metaed[i]);
-//     if (ft_strncmp(line->metaed[i], "<<", len) == 0)
-//         printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
-//     // line->token->redirect
-//     while (line->metaed[i] != NULL)
-//     {
-//         if (line->metaed[i][0] == '|')
-//             line->pipe_num++;
-//         i++;
-//     }
-//     return (line->pipe_num);
-// }
+    len = ft_strlen(line->metaed[i]);
+    if (ft_strncmp(line->metaed[i], "<<", len) == 0)
+        printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
+}
+
+void    p_count(t_mini *line)
+{
+    int i;
+    int len;
+
+    i = 0;
+    line->pipe_num = 0;
+    while (line->metaed[i] != NULL)
+    {
+        if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
+            line->pipe_num++;
+        i++;
+    }
+}
+
 int is_it_redirect(char *s)
 {
     int len;
@@ -261,35 +269,32 @@ int is_it_redirect(char *s)
     return (-1);
 }
 
+void    sort_args(t_mini *line)
+{
+    int i;
+    int len;
+    int check;
 
-// void    sort_args(t_mini *line)
-// {
-//     int i;
-//     int len;
-//     int check;
-
-//     i = 0;
-//     check = 0;
-//     while (line->metaed[i] != NULL)
-//     {
-//         len = ft_strlen(line->metaed[i]);
-//         if (ft_strncmp(line->metaed[i], "|", len) == 0)
-//         {
-//             if (i == 0)
-//                 printf("zsh: parse error near '|'\n"); //exit_error; discuss: echo | echo, echo | ; the 2nd example asks for a command (pipe>)
-//             line->pipe_num++;
-//         }
-//         else if (is_it_redirect(line->metaed[i]) == 0)
-//             check = ft_redirection(line, i); //needs to become i if not -1
-//         else
-//             check = ft_save(line, len, i); //needs to be 0 if not -1
-//         if (check == -1)
-//             printf("malloc error\n"); //needs to exit and clean
-//         else if (check > 0)
-//             i = check;
-//         i++;
-//     }
-// }
+    i = 0;
+    check = 0;
+    p_count(line);
+    r_count(line);
+    while (line->metaed[i] != NULL)
+    {
+        len = ft_strlen(line->metaed[i]);
+        if (ft_strncmp(line->metaed[i], "|", len) == 0)
+            line->pipe_num--;
+        else if (is_it_redirect(line->metaed[i]) == 0)
+            check = ft_redirection(line, i); //needs to become i if not -1
+        else
+            check = ft_save(line, len, i); //needs to be 0 if not -1
+        if (check == -1)
+            printf("malloc error\n"); //needs to exit and clean
+        else if (check > 0)
+            i = check;
+        i++;
+    }
+}
 
 void    validating(char *argv, t_mini *line)
 {
@@ -297,7 +302,6 @@ void    validating(char *argv, t_mini *line)
     int i;
 
     i = 0;
-    printf("entered firstsplit\n");
     words = w_count(argv);
     if (words == -1)
        printf("zsh: could not find the matching quote\n");
@@ -313,32 +317,64 @@ void    validating(char *argv, t_mini *line)
            printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
         i++;
     }
-    i--;
     if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
         (is_it_redirect(line->metaed[i]) == 0))
         printf("zsh: parse error near \\n\n");
-    printf("exited firstsplit\n");
 }
 
-void validate(char *argv, t_mini *line)
+char    *resolve_heredoc(char *denom, int hd)
 {
-    // int check;
-    printf("entered parse\n");
-    validating(argv, line);
-    // split_words(line);
-    printf("exited parse\n");
+    int         fd;
+    int         check;
+    char    *here_d;
+    const char  arg[256];
+
+    check = 0;
+    here_d = ft_itoa(hd);
+    fd = open(here_d, O_RDWR | O_CREAT, 0777);
+    if (fd == -1)
+        printf("error while opening file\n");
+    check = (fd, STDOUT_FILENO);
+    if (check == -1)
+        printf("error while dup2ing\n");
+    arg = readline(fd);
+    check = close (fd);
+    if (check == -1)
+        printf("error while closing file\n");
+    check = unlink("./here_doc");
+    if (check == -1)
+        printf("error while removing file\n");
+    free (denom);
+    return (here_d);
+}
+
+void    here_doc(t_mini *line)
+{
+    int i = 0;
+    int hd_num;
+
+    hd_num = 0;
+    while (line->metaed[i] != NULL)
+    {
+        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
+        {
+            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], hd_num);
+            hd_num++;
+        }
+        i++;
+    }
 }
 
 int main(void)
 {
     t_mini  line;
-    // t_cmnd  token;
-    char line_read[] = "heyheyhey < cart > > hayr | vcat gfgf | eufh | <<";
+    // the actual line_read will replace the line_read
+    char line_read[] = "< infile cat | cat > outfile";
 
-    // initialise(line);
     line = (t_mini){0};
-    printf("%s\n", line_read);
-    validate(line_read, &line);
+    validating(line_read, &line);
+    here_doc(&line);
+    sort_args(&line);
     int i = 0;
     while (line.metaed[i] != NULL)
         printf("%s\n", line.metaed[i++]);
