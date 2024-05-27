@@ -10,10 +10,19 @@
 
 typedef struct s_tokens
 {
-    char    **cmnd;
+    char    **command;
     char    **redirect;
-    char    **file_name;
+    int     r_num;
+    int     o_num;
 }   t_tokens;
+
+typedef struct s_list
+{
+    t_tokens token;
+    int r_num;
+    int o_num;
+    struct s_list *next;
+} t_list;
 
 typedef struct s_mini
 {
@@ -243,19 +252,20 @@ int ft_redirection(t_mini  *line, int i)
         printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
 }
 
-void    p_count(t_mini *line)
+int   c_count(t_mini *line, char *str)
 {
     int i;
-    int len;
+    int c_num;
 
     i = 0;
-    line->pipe_num = 0;
+    c_num = 0;
     while (line->metaed[i] != NULL)
     {
-        if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
-            line->pipe_num++;
+        if (ft_strncmp(line->metaed[i], str, ft_strlen(line->metaed[i])) == 0)
+            c_num++;
         i++;
     }
+    return (c_num);
 }
 
 int is_it_redirect(char *s)
@@ -269,8 +279,33 @@ int is_it_redirect(char *s)
     return (-1);
 }
 
-void    sort_args(t_mini *line)
+int    createnode(t_list *head, t_mini *line, int i)
 {
+    while (line->metaed[i] != '|' || line->metaed[i] != NULL)
+    {
+        head->r_num = c_count(line, )
+        i++;
+    }
+    return (i);
+}
+
+
+void    sort_args(t_mini *line, t_list *head)
+{
+    int i;
+
+    line->pipe_num = c_count(line, "|");
+    head = malloc(sizeof(t_list));
+    if (!head)
+        printf("malloc failed\n");
+    i = createnode(head, line, 0);
+
+    while (line->pipe_num > 0)
+    {
+        ft_node(head, line, i);
+        line->pipe_num--;
+    }
+
     int i;
     int len;
     int check;
@@ -278,9 +313,12 @@ void    sort_args(t_mini *line)
     i = 0;
     check = 0;
     p_count(line);
-    r_count(line);
+    allocate_commands(line, )
     while (line->metaed[i] != NULL)
     {
+        while (line->pipe_num != 0)
+        {
+            
         len = ft_strlen(line->metaed[i]);
         if (ft_strncmp(line->metaed[i], "|", len) == 0)
             line->pipe_num--;
@@ -293,6 +331,7 @@ void    sort_args(t_mini *line)
         else if (check > 0)
             i = check;
         i++;
+        }
     }
 }
 
@@ -324,6 +363,7 @@ void    validating(char *argv, t_mini *line)
 
 char    *resolve_heredoc(char *denom, int hd)
 {
+    //use the pipe and dup2
     int         fd;
     int         check;
     char    *here_d;
@@ -368,13 +408,17 @@ void    here_doc(t_mini *line)
 int main(void)
 {
     t_mini  line;
+    t_list  commands;
+
     // the actual line_read will replace the line_read
     char line_read[] = "< infile cat | cat > outfile";
 
     line = (t_mini){0};
+    commands = (t_list){0};
     validating(line_read, &line);
     here_doc(&line);
-    sort_args(&line);
+    //expand
+    sort_args(&line, &commands);
     int i = 0;
     while (line.metaed[i] != NULL)
         printf("%s\n", line.metaed[i++]);
