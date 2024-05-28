@@ -12,8 +12,6 @@ typedef struct s_tokens
 {
     char    **command;
     char    **redirect;
-    int     r_num;
-    int     o_num;
 }   t_tokens;
 
 typedef struct s_list
@@ -160,89 +158,6 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 // 	return (sub_s);
 // }
 
-int ft_skip(char *s, int i)
-{
-    char    c;
-
-    c = s[i];
-    i++;
-    while (s[i] != '\0' && s[i] != c)
-        i++;
-    if (s[i] == c)
-        return (i + 1);
-    else
-        return (-1);
-}
-
-int w_count(char *s)
-{
-    int i;
-    int words;
-
-    i = 0;
-    words = 0;
-    while(s[i] != '\0')
-    {
-        while (s[i] != '\0' && s[i] == 32) //add whitespace cchars
-            i++;
-        if (s[i] == '\'' || s[i] == '\"')
-        {
-            i = ft_skip(s, i);
-            if (i == -1)
-                return (-1);
-        }
-        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
-        {
-            if (s[i] != '|' && (s[i + 1] == '>' || s[i + 1] == '<'))
-                i++;
-            i++;
-        }
-        else
-        {
-            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
-                i++;
-        }
-        words++;
-    }
-    return (words);
-}
-
-void    minishell_split(char *s, t_mini *line)
-{
-    int i;
-    int j;
-    int prev_i;
-
-    i = 0;
-    j = 0;
-    while (s[i] != '\0')
-    {
-        while (s[i] != '\0' && s[i] == 32)
-                i++;
-        prev_i = i;
-        if (s[i] == '\'' || s[i] == '\"')
-            i = ft_skip(s, i);
-        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
-        {
-            if ((s[i] == '<' && s[i + 1] == '<') || (s[i] == '>' && s[i + 1] == '>'))
-                i++;
-            i++;
-        }
-        else
-        {
-            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
-                i++;
-        }
-        if (prev_i != i)
-        {
-            line->metaed[j++] = ft_substr(s, prev_i, i - prev_i);
-            if (line->metaed[j - 1] == NULL)
-                printf("malloc error\n");
-        }
-    }
-    line->metaed[j] = NULL;
-}
-
 int ft_redirection(t_mini  *line, int i)
 {
     int len;
@@ -252,33 +167,24 @@ int ft_redirection(t_mini  *line, int i)
         printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
 }
 
-int   p_count(t_mini *line, char *str)
+//check if works
+void    c_count(t_mini *line, t_list *node, int i)
 {
-    int i;
-    int p_num;
 
-    p_num = 0;
-    while (line->metaed[i] != NULL)
-    {
-        if (ft_strncmp(line->metaed[i], str, ft_strlen(line->metaed[i])) == 0)
-            p_num++;
-        i++;
-    }
-    line->pipe_num = p_num;
-}
-
-int r_count(t_mini *line, int i)
-{
-    int c_num;
-
-    c_num = 0;
-    while (ft_strncmp(line->metaed[i], str, ft_strlen(line->metaed[i])) != 0 || line->metaed[i] != NULL)
+    node->r_num = 0;
+    node->o_num = 0;
+    while (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) != 0 \
+        || line->metaed[i] != NULL)
     {
         if (is_it_redirect(line->metaed[i]) == 0)
-            c_num++;
+        {
+            node->r_num += 2;
+            i++;
+        }
+        else
+            node->o_num++;
         i++;
     }
-    return (c_num);
 }
 
 int is_it_redirect(char *s)
@@ -291,12 +197,22 @@ int is_it_redirect(char *s)
         return (0);
     return (-1);
 }
+int alloc_token(t_list *head, t_mini *line)
+{
+    head->token
+}
 
 int    createnode(t_list *head, t_mini *line, int i)
 {
-    while (line->metaed[i] != '|' || line->metaed[i] != NULL)
+    c_count(line, head, i);
+    alloc_token(head, line)
+    
+    ->token->r_num = c_count(line, i);
+    token->redirect[j] = 
+    while (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) != 0 \
+        || line->metaed[i] != NULL)
     {
-        head->r_num = c_count(line, )
+        
         i++;
     }
     return (i);
@@ -307,7 +223,7 @@ void    sort_args(t_mini *line, t_list *head)
 {
     int i;
 
-    line->pipe_num = c_count(line, "|");
+    p_count(line, "|");
     head = malloc(sizeof(t_list));
     if (!head)
         printf("malloc failed\n");
@@ -348,91 +264,3 @@ void    sort_args(t_mini *line, t_list *head)
     }
 }
 
-void    validating(char *argv, t_mini *line)
-{
-    int words;
-    int i;
-
-    i = 0;
-    words = w_count(argv);
-    if (words == -1)
-       printf("zsh: could not find the matching quote\n");
-    line->metaed = (char **)malloc(sizeof(char *) * (words + 1));
-    if (!line->metaed)
-        printf("zsh: Cannot allocate memory\n");
-    minishell_split(argv, line);
-    if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
-        printf("zsh: parse error near `|'\n");
-    while (i + 1 < words)
-    {
-        if (is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
-           printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
-        i++;
-    }
-    if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
-        (is_it_redirect(line->metaed[i]) == 0))
-        printf("zsh: parse error near \\n\n");
-}
-
-char    *resolve_heredoc(char *denom, int hd)
-{
-    //use the pipe and dup2
-    int         fd;
-    int         check;
-    char    *here_d;
-    const char  arg[256];
-
-    check = 0;
-    here_d = ft_itoa(hd);
-    fd = open(here_d, O_RDWR | O_CREAT, 0777);
-    if (fd == -1)
-        printf("error while opening file\n");
-    check = (fd, STDOUT_FILENO);
-    if (check == -1)
-        printf("error while dup2ing\n");
-    arg = readline(fd);
-    check = close (fd);
-    if (check == -1)
-        printf("error while closing file\n");
-    check = unlink("./here_doc");
-    if (check == -1)
-        printf("error while removing file\n");
-    free (denom);
-    return (here_d);
-}
-
-void    here_doc(t_mini *line)
-{
-    int i = 0;
-    int hd_num;
-
-    hd_num = 0;
-    while (line->metaed[i] != NULL)
-    {
-        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
-        {
-            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], hd_num);
-            hd_num++;
-        }
-        i++;
-    }
-}
-
-int main(void)
-{
-    t_mini  line;
-    t_list  commands;
-
-    // the actual line_read will replace the line_read
-    char line_read[] = "< infile cat | cat > outfile";
-
-    line = (t_mini){0};
-    commands = (t_list){0};
-    validating(line_read, &line);
-    here_doc(&line);
-    //expand
-    sort_args(&line, &commands);
-    int i = 0;
-    while (line.metaed[i] != NULL)
-        printf("%s\n", line.metaed[i++]);
-}
