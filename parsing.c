@@ -252,16 +252,29 @@ int ft_redirection(t_mini  *line, int i)
         printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
 }
 
-int   c_count(t_mini *line, char *str)
+int   p_count(t_mini *line, char *str)
 {
     int i;
-    int c_num;
+    int p_num;
 
-    i = 0;
-    c_num = 0;
+    p_num = 0;
     while (line->metaed[i] != NULL)
     {
         if (ft_strncmp(line->metaed[i], str, ft_strlen(line->metaed[i])) == 0)
+            p_num++;
+        i++;
+    }
+    line->pipe_num = p_num;
+}
+
+int r_count(t_mini *line, int i)
+{
+    int c_num;
+
+    c_num = 0;
+    while (ft_strncmp(line->metaed[i], str, ft_strlen(line->metaed[i])) != 0 || line->metaed[i] != NULL)
+    {
+        if (is_it_redirect(line->metaed[i]) == 0)
             c_num++;
         i++;
     }
