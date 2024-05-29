@@ -299,10 +299,11 @@ int    c_count(t_mini *line, t_alloc *ed, int i)
 
     ed->redir = 0;
     ed->other = 0;
-    while (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) != 0 \
-        || line->metaed[i] != NULL)
+    while (line->metaed[i] != NULL)
     {
-        if (is_it_redirect(line->metaed[i]) == 0)
+		if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
+			break ;
+        else if (is_it_redirect(line->metaed[i]) == 0)
         {
             ed->redir += 2;
             i++;
@@ -331,10 +332,10 @@ void    p_count(t_mini *line)
 
 int	allocating_token(t_tokens *token, t_alloc *ed)
 {
-	token->command = malloc(sizeof(char **) * (ed->other + 1));
+	token->command = malloc(sizeof(char *) * (ed->other + 1));
 	if (!token->command)
 		return (-1);
-	token->redirect = malloc(sizeof(char **) * (ed->redir + 1));
+	token->redirect = malloc(sizeof(char *) * (ed->redir + 1));
 	if (!token->redirect)
 		return (-1);
 	return (0);
@@ -353,16 +354,16 @@ void	copy_tokens(t_mini *line, t_tokens *token, int pre_i, int i)
         {
             token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
 			if (!(token->redirect[k - 1]))
-				printf("mallocfail\n");
+				printf("mallocfail 357\n");
             token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
 			if (!(token->redirect[k - 1]))
-				printf("mallocfail\n");
+				printf("mallocfail 360\n");
         }
         else
 		{
             token->command[j++] = ft_strdup(line->metaed[pre_i++]);
-			if (!(token->redirect[k - 1]))
-				printf("mallocfail\n");
+			if (!(token->command[k - 1]))
+				printf("mallocfail 366\n");
 		}
 	}
     token->redirect[k] = NULL;
@@ -392,7 +393,11 @@ void	function(t_mini *line)
 		check = allocating_token(&token[j], &ed);
 		if (check == -1)
 			printf("mallocerror\n");
+		if (j != 0 && ft_strncmp(line->metaed[prev_i], "|", ft_strlen(line->metaed[prev_i])) == 0)
+			prev_i++;
 		copy_tokens(line, &token[j], prev_i, i);
+		if (line->metaed[i] != NULL)
+			i++;
 		j++;
 	}
 	j = 0;

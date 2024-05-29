@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 11:48:57 by mspasic           #+#    #+#             */
-/*   Updated: 2024/05/27 11:50:15 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/05/29 14:47:17 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ typedef struct s_tokens
 {
     char    **cmnd;
     char    **redirect;
-    char    **file_name;
 }   t_tokens;
 
 typedef struct s_mini
