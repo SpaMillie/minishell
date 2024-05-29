@@ -14,13 +14,18 @@ typedef struct s_tokens
     char    **redirect;
 }   t_tokens;
 
-typedef struct s_list
+typedef	struct s_alloc
 {
-    t_tokens token;
-    int r_num;
-    int o_num;
-    struct s_list *next;
-} t_list;
+	int	redir;
+	int	other;
+}	t_alloc;
+// typedef struct s_list
+// {
+//     t_tokens token;
+//     int r_num;
+//     int o_num;
+//     struct s_list *next;
+// } t_list;
 
 typedef struct s_mini
 {
@@ -29,7 +34,9 @@ typedef struct s_mini
     int         redir_num;
 }   t_mini;
 
-size_t	ft_strlen(const char *str)
+void	function(t_mini *line);
+
+static size_t	ft_strlen(const char *str)
 {
 	size_t	i;
 
@@ -39,7 +46,7 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
+static size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
 {
 	size_t	srcsize;
 	size_t	i;
@@ -58,7 +65,7 @@ size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
 	return (srcsize);
 }
 
-char	*ft_strchr(const char *s, int c)
+static char	*ft_strchr(const char *s, int c)
 {
 	size_t	i;
 	char	*ptr;
@@ -79,7 +86,7 @@ char	*ft_strchr(const char *s, int c)
 	return (ptr);
 }
 
-char	*ft_strdup(const char *s1)
+static char	*ft_strdup(const char *s1)
 {
 	char	*s1_cpy;
 	int		i;
@@ -100,7 +107,7 @@ char	*ft_strdup(const char *s1)
 	return (s1_cpy);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+static char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char			*sub_s;
 	size_t			str_len;
@@ -119,7 +126,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (sub_s);
 }
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+static int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t			i;
 	unsigned char	*str1;
@@ -158,34 +165,97 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 // 	return (sub_s);
 // }
 
-int ft_redirection(t_mini  *line, int i)
+int ft_skip(char *s, int i)
 {
-    int len;
+    char    c;
 
-    len = ft_strlen(line->metaed[i]);
-    if (ft_strncmp(line->metaed[i], "<<", len) == 0)
-        printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
+    c = s[i];
+    i++;
+    while (s[i] != '\0' && s[i] != c)
+        i++;
+    if (s[i] == c)
+        return (i + 1);
+    else
+        return (-1);
 }
 
-//check if works
-void    c_count(t_mini *line, t_list *node, int i)
+int w_count(char *s)
 {
+    int i;
+    int words;
 
-    node->r_num = 0;
-    node->o_num = 0;
-    while (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) != 0 \
-        || line->metaed[i] != NULL)
+    i = 0;
+    words = 0;
+    while(s[i] != '\0')
     {
-        if (is_it_redirect(line->metaed[i]) == 0)
+        while (s[i] != '\0' && s[i] == 32) //add whitespace cchars
+            i++;
+        if (s[i] == '\'' || s[i] == '\"')
         {
-            node->r_num += 2;
+            i = ft_skip(s, i);
+            if (i == -1)
+                return (-1);
+        }
+        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+        {
+            if (s[i] != '|' && (s[i + 1] == '>' || s[i + 1] == '<'))
+                i++;
             i++;
         }
         else
-            node->o_num++;
-        i++;
+        {
+            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
+                i++;
+        }
+        words++;
     }
+    return (words);
 }
+
+void    minishell_split(char *s, t_mini *line)
+{
+    int i;
+    int j;
+    int prev_i;
+
+    i = 0;
+    j = 0;
+    while (s[i] != '\0')
+    {
+        while (s[i] != '\0' && s[i] == 32)
+                i++;
+        prev_i = i;
+        if (s[i] == '\'' || s[i] == '\"')
+            i = ft_skip(s, i);
+        else if (s[i] == '|' || s[i] == '>' || s[i] == '<')
+        {
+            if ((s[i] == '<' && s[i + 1] == '<') || (s[i] == '>' && s[i + 1] == '>'))
+                i++;
+            i++;
+        }
+        else
+        {
+            while (s[i] != '\0' && ft_strchr(" >|<\'\"", s[i]) == NULL)
+                i++;
+        }
+        if (prev_i != i)
+        {
+            line->metaed[j++] = ft_substr(s, prev_i, i - prev_i);
+            if (line->metaed[j - 1] == NULL)
+                printf("malloc error\n");
+        }
+    }
+    line->metaed[j] = NULL;
+}
+
+// int ft_redirection(t_mini  *line, int i)
+// {
+//     int len;
+
+//     len = ft_strlen(line->metaed[i]);
+//     if (ft_strncmp(line->metaed[i], "<<", len) == 0)
+//         printf("heredoc\n"); //discuss how to handle: here or before when taking in the args
+// }
 
 int is_it_redirect(char *s)
 {
@@ -197,70 +267,165 @@ int is_it_redirect(char *s)
         return (0);
     return (-1);
 }
-int alloc_token(t_list *head, t_mini *line)
+
+void    validating(char *argv, t_mini *line)
 {
-    head->token
+    int words;
+    int i;
+
+    i = 0;
+    words = w_count(argv);
+    if (words == -1)
+       printf("zsh: could not find the matching quote\n");
+    line->metaed = (char **)malloc(sizeof(char *) * (words + 1));
+    if (!line->metaed)
+        printf("zsh: Cannot allocate memory\n");
+    minishell_split(argv, line);
+    if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
+        printf("zsh: parse error near `|'\n");
+    while (i + 1 < words)
+    {
+        if (is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
+           printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
+        i++;
+    }
+    if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
+        (is_it_redirect(line->metaed[i]) == 0))
+        printf("zsh: parse error near \\n\n");
 }
 
-int    createnode(t_list *head, t_mini *line, int i)
+int    c_count(t_mini *line, t_alloc *ed, int i)
 {
-    c_count(line, head, i);
-    alloc_token(head, line)
-    
-    ->token->r_num = c_count(line, i);
-    token->redirect[j] = 
+
+    ed->redir = 0;
+    ed->other = 0;
     while (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) != 0 \
         || line->metaed[i] != NULL)
     {
-        
+        if (is_it_redirect(line->metaed[i]) == 0)
+        {
+            ed->redir += 2;
+            i++;
+        }
+        else
+            ed->other++;
         i++;
     }
-    return (i);
+	return (i);
 }
 
-
-void    sort_args(t_mini *line, t_list *head)
+void    p_count(t_mini *line)
 {
     int i;
 
-    p_count(line, "|");
-    head = malloc(sizeof(t_list));
-    if (!head)
-        printf("malloc failed\n");
-    i = createnode(head, line, 0);
-
-    while (line->pipe_num > 0)
-    {
-        ft_node(head, line, i);
-        line->pipe_num--;
-    }
-
-    int i;
-    int len;
-    int check;
-
-    i = 0;
-    check = 0;
-    p_count(line);
-    allocate_commands(line, )
+	i = 0;
+    line->pipe_num = 0;
     while (line->metaed[i] != NULL)
     {
-        while (line->pipe_num != 0)
-        {
-            
-        len = ft_strlen(line->metaed[i]);
-        if (ft_strncmp(line->metaed[i], "|", len) == 0)
-            line->pipe_num--;
-        else if (is_it_redirect(line->metaed[i]) == 0)
-            check = ft_redirection(line, i); //needs to become i if not -1
-        else
-            check = ft_save(line, len, i); //needs to be 0 if not -1
-        if (check == -1)
-            printf("malloc error\n"); //needs to exit and clean
-        else if (check > 0)
-            i = check;
+        if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
+            line->pipe_num++;
         i++;
-        }
     }
+	line->pipe_num++;
 }
 
+int	allocating_token(t_tokens *token, t_alloc *ed)
+{
+	token->command = malloc(sizeof(char **) * (ed->other + 1));
+	if (!token->command)
+		return (-1);
+	token->redirect = malloc(sizeof(char **) * (ed->redir + 1));
+	if (!token->redirect)
+		return (-1);
+	return (0);
+}
+
+void	copy_tokens(t_mini *line, t_tokens *token, int pre_i, int i)
+{
+	int	k;
+	int	j;
+
+	k = 0;
+	j = 0;
+	while (pre_i < i)
+	{
+        if (is_it_redirect(line->metaed[pre_i]) == 0)
+        {
+            token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
+			if (!(token->redirect[k - 1]))
+				printf("mallocfail\n");
+            token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
+			if (!(token->redirect[k - 1]))
+				printf("mallocfail\n");
+        }
+        else
+		{
+            token->command[j++] = ft_strdup(line->metaed[pre_i++]);
+			if (!(token->redirect[k - 1]))
+				printf("mallocfail\n");
+		}
+	}
+    token->redirect[k] = NULL;
+	token->command[j] = NULL;
+}
+
+void	function(t_mini *line)
+{
+	t_tokens	*token;
+	t_alloc		ed;
+	int			prev_i;
+	int			i;
+	int			j;
+	int			check;
+
+	i = 0;
+	j = 0;
+	check = 0;
+	p_count(line);
+	token = malloc(sizeof(t_tokens *) * (line->pipe_num));
+	if (!token)
+		printf("malloc\n");
+	while (j < line->pipe_num)
+	{
+		prev_i = i;
+		i = c_count(line, &ed, i);
+		check = allocating_token(&token[j], &ed);
+		if (check == -1)
+			printf("mallocerror\n");
+		copy_tokens(line, &token[j], prev_i, i);
+		j++;
+	}
+	j = 0;
+	i = 0;
+	while (j < line->pipe_num)
+	{
+		printf("j is %d", j);
+		while (token[j].redirect[i] != NULL)
+		{
+			printf("redirect is: %s\n", token[j].redirect[i]);
+			i++;
+		}
+		i = 0;
+		while (token[j].command[i] != NULL)
+		{
+			printf("command is: %s\n", token[j].command[i]);
+			i++;
+		}
+		j++;
+	}
+}
+
+int main(void)
+{
+    t_mini  line;
+    // the actual line_read will replace the line_read
+    char line_read[] = "< infile cat | cat > outfile";
+
+    line = (t_mini){0};
+    validating(line_read, &line);
+    // for checking the arguments, ie, will be deleted after
+    int i = 0;
+    while (line.metaed[i] != NULL)
+        printf("%s\n", line.metaed[i++]);
+	function (&line);
+}
