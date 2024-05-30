@@ -362,7 +362,7 @@ void	copy_tokens(t_mini *line, t_tokens *token, int pre_i, int i)
         else
 		{
             token->command[j++] = ft_strdup(line->metaed[pre_i++]);
-			if (!(token->command[k - 1]))
+			if (!(token->command[j - 1]))
 				printf("mallocfail 366\n");
 		}
 	}
@@ -383,7 +383,7 @@ void	function(t_mini *line)
 	j = 0;
 	check = 0;
 	p_count(line);
-	token = malloc(sizeof(t_tokens *) * (line->pipe_num));
+	token = malloc(sizeof(t_tokens) * (line->pipe_num));
 	if (!token)
 		printf("malloc\n");
 	while (j < line->pipe_num)
@@ -393,38 +393,36 @@ void	function(t_mini *line)
 		check = allocating_token(&token[j], &ed);
 		if (check == -1)
 			printf("mallocerror\n");
-		if (j != 0 && ft_strncmp(line->metaed[prev_i], "|", ft_strlen(line->metaed[prev_i])) == 0)
-			prev_i++;
 		copy_tokens(line, &token[j], prev_i, i);
-		if (line->metaed[i] != NULL)
+		if (line->metaed[i] != NULL && ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
 			i++;
 		j++;
 	}
-	j = 0;
-	i = 0;
-	while (j < line->pipe_num)
-	{
-		printf("j is %d", j);
-		while (token[j].redirect[i] != NULL)
-		{
-			printf("redirect is: %s\n", token[j].redirect[i]);
-			i++;
-		}
-		i = 0;
-		while (token[j].command[i] != NULL)
-		{
-			printf("command is: %s\n", token[j].command[i]);
-			i++;
-		}
-		j++;
-	}
+	// j = 0;
+	// while (j < line->pipe_num)
+	// {
+	// 	i = 0;
+	// 	printf("j is %d\n", j);
+	// 	while (token[j].redirect[i] != NULL)
+	// 	{
+	// 		printf("redirect is: %s\n", token[j].redirect[i]);
+	// 		i++;
+	// 	}
+	// 	i = 0;
+	// 	while (token[j].command[i] != NULL)
+	// 	{
+	// 		printf("command is: %s\n", token[j].command[i]);
+	// 		i++;
+	// 	}
+	// 	j++;
+	// }
 }
 
 int main(void)
 {
     t_mini  line;
     // the actual line_read will replace the line_read
-    char line_read[] = "< infile cat | cat > outfile";
+    char line_read[] = "< infile cat -e | cat -e > outfile";
 
     line = (t_mini){0};
     validating(line_read, &line);
