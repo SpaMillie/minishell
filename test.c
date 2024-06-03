@@ -1,19 +1,3 @@
-
-
-// line = 'echo '$HOME''
-
-/*
-single quotes just ft_skip + $ becomes 7
-double quotes trickier
-either way trim and then check if there are chars on either side and 
-concat
- if [i == ' or "]
- if i != 0
- check if [i - 1] != space/pipe
- if i - 1 == space means all good
- if i - 1 == pipe means that basically i == 0
-*/
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -137,6 +121,46 @@ int ft_skip(char *s, int i)
     else
         return (-1);
 }
+void	second_splitting(t_mini *line)
+{
+	int	prev_j;
+	int	i;
+	int	j;
+	int	k;
+
+	i = 0;
+	k = 0;
+	while (line->element[i] != NULL)
+	{
+		j = 0;
+		while (line->element[i][j] != '\0')
+		{
+			prev_j = j;
+			if (line->element[i][j] == '>' || line->element[i][j] == '<' || line->element[i][j] == '|')
+			{
+				if ((line->element[i][j] == '>' && line->element[i][j + 1] == '>') || (line->element[i][j] == '<' &&  line->element[i][j + 1] == '<'))
+					j++;
+				j++;
+			}
+			else
+			{
+				while (line->element[i][j] != '\0' && line->element[i][j] != '>' && line->element[i][j] != '<' && line->element[i][j] != '|')
+				{
+					if (line->element[i][j] == '\'' || line->element[i][j] == '\"')
+						j = ft_skip(line->element[i], j);
+					else
+						j++;
+				}
+			}
+			line->metaed[k++] = ft_substr(line->element[i], prev_j, j - prev_j);
+		    if (line->metaed[k - 1] == NULL)
+                printf("malloc error\n");
+		}
+		i++;	
+	}
+	line->metaed[k] = NULL;
+}
+
 
 void	first_splitting(char *s, t_mini *line)
 {
@@ -272,6 +296,9 @@ void    validating(char *argv, t_mini *line)
     while (line->element[i] != NULL)
         printf("%s\n", line->element[i++]);
 	second_split(line);
+	i = 0;
+    while (line->metaed[i] != NULL)
+        printf("%s\n", line->metaed[i++]);
     // if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
     //     printf("zsh: parse error near `|'\n");
     // while (i + 1 < words)

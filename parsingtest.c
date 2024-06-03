@@ -200,6 +200,19 @@ int ft_quotes(char *s, int i)
         return (-1);
 	}
 }
+int ft_skip(char *s, int i)
+{
+    char    c;
+
+    c = s[i];
+    i++;
+    while (s[i] != '\0' && s[i] != c)
+        i++;
+    if (s[i] == c)
+        return (i + 1);
+    else
+        return (-1);
+}
 
 int w_count(char *s)
 {
@@ -208,6 +221,26 @@ int w_count(char *s)
 
     i = 0;
     words = 0;
+	while (s[i] != '\0')
+	{
+	    while (s[i] != '\0' && is_it_space(s, i) == 0)
+            i++;
+		if (s[i] != '\0' && is_it_space(s, i) != 0)
+		{
+			words++;
+			while (s[i] != '\0' && is_it_space(s, i) != 0)
+			{
+				if (s[i] == '\'' || s[i] == '\"')
+					i = ft_skip(s, i);
+				if (i == -1)
+					return (-1);
+				i++;
+			}
+		}
+	}
+	return (words);
+}
+
     while(s[i] != '\0')
     {
         while (s[i] != '\0' && is_it_space(s, i) == 0)
