@@ -336,26 +336,26 @@ void    validating(char *argv, t_mini *line)
 	int	words;
 	int	i;
 
+    i = 0;
 	if (first_split(argv, line) == -1)
 		printf("zsh: could not find the matching quote\n");
-	i = 0;
-    while (line->element[i] != NULL)
-        printf("%s\n", line->element[i++]);
+	// i = 0;
+    // while (line->element[i] != NULL)
+    //     printf("%s\n", line->element[i++]);
 	words = second_split(line);
-	i = 0;
-    while (line->metaed[i] != NULL)
-        printf("%s\n", line->metaed[i++]);
-    if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
+	// i = 0;
+    // while (line->metaed[i] != NULL)
+    //     printf("%s\n", line->metaed[i++]);
+    if (ft_strlen(line->metaed[i]) != 0 && ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
         printf("zsh: parse error near `|'\n");
-	i = 0;
     while (i + 1 < words)
     {
-        if (is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
+        if (ft_strlen(line->metaed[i]) != 0 && is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
            printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
         i++;
     }
-    if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
-        (is_it_redirect(line->metaed[i]) == 0))
+    if (ft_strlen(line->metaed[i]) != 0 && (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
+        (is_it_redirect(line->metaed[i]) == 0)))
         printf("zsh: parse error near \\n\n");
 }
 
