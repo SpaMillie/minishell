@@ -11,6 +11,17 @@ typedef struct s_mini
     int		pipe_num;
 }   t_mini;
 
+char	**free_double(char **res)
+{
+	int	i;
+
+	i = 0;
+	while (res[i])
+		free(res[i++]);
+	free(res);
+	return (NULL);
+}
+
 static size_t	ft_strlen(const char *str)
 {
 	size_t	i;
@@ -101,11 +112,43 @@ static char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (sub_s);
 }
 
+static int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
+
+	i = 0;
+	str1 = (unsigned char *)s1;
+	str2 = (unsigned char *)s2;
+	while (i < n && str1[i] != '\0')
+	{
+		if (str1[i] == str2[i])
+			i++;
+		else
+			return (str1[i] - str2[i]);
+	}
+	if (i < n)
+		return (-str2[i]);
+	return (0);
+}
+
 int	is_it_space(char *s, int i)
 {
 	if ((s[i] == 32 || (s[i] < 14 && s[i] > 8)))
 		return (0);
 	return (1);
+}
+
+int is_it_redirect(char *s)
+{
+    int len;
+
+    len = ft_strlen(s);
+    if (ft_strncmp(s, "<", len) == 0 || ft_strncmp(s, ">", len) == 0 || \
+        ft_strncmp(s, ">>", len) == 0 || ft_strncmp(s, "<<", len) == 0)
+        return (0);
+    return (-1);
 }
 
 int ft_skip(char *s, int i)
@@ -160,7 +203,6 @@ void	second_splitting(t_mini *line)
 	}
 	line->metaed[k] = NULL;
 }
-
 
 void	first_splitting(char *s, t_mini *line)
 {
@@ -257,7 +299,7 @@ int	w_count(t_mini *line)
 	return (words);
 }
 
-void	second_split(t_mini *line)
+int	second_split(t_mini *line)
 {
 	int	i;
 	int	words;
@@ -269,6 +311,7 @@ void	second_split(t_mini *line)
     if (!line->metaed)
         printf("zsh: Cannot allocate memory\n");
 	second_splitting(line);
+	return (words);
 }
 
 int	first_split(char *argv, t_mini *line)
@@ -290,39 +333,119 @@ int	first_split(char *argv, t_mini *line)
 
 void    validating(char *argv, t_mini *line)
 {
+	int	words;
+	int	i;
+
 	if (first_split(argv, line) == -1)
 		printf("zsh: could not find the matching quote\n");
-	int i = 0;
+	i = 0;
     while (line->element[i] != NULL)
         printf("%s\n", line->element[i++]);
-	second_split(line);
+	words = second_split(line);
 	i = 0;
     while (line->metaed[i] != NULL)
         printf("%s\n", line->metaed[i++]);
-    // if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
-    //     printf("zsh: parse error near `|'\n");
-    // while (i + 1 < words)
-    // {
-    //     if (is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
-    //        printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
-    //     i++;
-    // }
-    // if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
-    //     (is_it_redirect(line->metaed[i]) == 0))
-    //     printf("zsh: parse error near \\n\n");
+    if (ft_strncmp(line->metaed[0], "|", ft_strlen(line->metaed[0])) == 0)
+        printf("zsh: parse error near `|'\n");
+	i = 0;
+    while (i + 1 < words)
+    {
+        if (is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
+           printf("zsh: parse error near i + 1\n"); //needs a function to output the second redirection
+        i++;
+    }
+    if (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
+        (is_it_redirect(line->metaed[i]) == 0))
+        printf("zsh: parse error near \\n\n");
+}
+
+char	*trim_copy(t_mini *line, char *copy, int i, int j)
+{
+	int		k;
+	char	c;
+
+	k = 0;
+	c = line->metaed[i][j];
+	while (k < j)
+	{
+		copy[k] = line->metaed[i][k];
+		k++;
+	}
+	j++;
+	while (line->metaed[i][j] != c)
+	{
+		if (c == '\'' && line->metaed[i][j] == '$')
+		{
+			copy[k++] = 7;
+			j++;
+		}
+		else
+			copy[k++] = line->metaed[i][j++];
+	}
+	j++;
+	while (line->metaed[i][j] != '\0')
+		copy[k++] = line->metaed[i][j++];
+	copy[k] = '\0';
+	free(line->metaed[i]);
+	return (copy);
+}
+
+int	snip_snip(t_mini *line, int i, int j)
+{
+	char	*trimmed_string;
+	int		len;
+	char	c;
+	int		count;
+
+	len = ft_strlen(line->metaed[i]);
+	c = line->metaed[i][j];
+	count = j + 1;
+	trimmed_string = malloc((sizeof(char)) * (len - 1));
+	if (!trimmed_string)
+		printf("malloc error\n");
+	while (line->metaed[i][count] != c)
+		count++;
+	count = count - 1;
+	printf("count is %d\n", count);
+	line->metaed[i] = trim_copy(line, trimmed_string, i, j);
+	return (count);
+}
+
+void	trim_quotes(t_mini *line)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (line->metaed[i] != NULL)
+	{
+		j = 0;
+		while (line->metaed[i][j] != '\0')
+		{
+			if (line->metaed[i][j] == '\'' || line->metaed[i][j] == '\"') 
+				j = snip_snip(line, i, j);
+			else
+				j++;
+		}
+		printf("new metaed is %s\n", line->metaed[i]);
+		i++;
+	}
 }
 
 int main(void)
 {
     t_mini  line;
     // the actual line_read will replace the line_read
-    char line_read[] = "'echo ' 'hey'>>hom|ed";
+    char line_read[] = "ech'o ' ''>>$home|ed";
 
     line = (t_mini){0};
     validating(line_read, &line);
+	trim_quotes(&line);
     // for checking the arguments, ie, will be deleted after
     // int i = 0;
     // while (line.metaed[i] != NULL)
     //     printf("%s\n", line.metaed[i++]);
 	// function (&line);
+	free_double(line.element);
+	free_double(line.metaed);
 }
