@@ -262,6 +262,49 @@ int e_count(char *s)
 	return (words);
 }
 
+char    *resolve_heredoc(char *denom, int hd)
+{
+    //use the pipe and dup2
+    int         fd;
+    int         check;
+    char    *here_d;
+    const char  arg[256];
+
+    check = 0;
+    here_d = ft_itoa(hd);
+    fd = open(here_d, O_RDWR | O_CREAT, 0777);
+    if (fd == -1)
+        printf("error while opening file\n");
+    check = (fd, STDOUT_FILENO);
+    if (check == -1)
+        printf("error while dup2ing\n");
+    arg = readline(fd);
+    check = close (fd);
+    if (check == -1)
+        printf("error while closing file\n");
+    check = unlink("./here_doc");
+    if (check == -1)
+        printf("error while removing file\n");
+    free (denom);
+    return (here_d);
+}
+
+void    here_doc(t_mini *line, int i, int j)
+{
+    int hd_num;
+
+    hd_num = 0;
+    while (line->metaed[i] != NULL)
+    {
+        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
+        {
+            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], hd_num);
+            hd_num++;
+        }
+        i++;
+    }
+}
+
 int	w_count(t_mini *line)
 {
 	int	i;
@@ -277,8 +320,13 @@ int	w_count(t_mini *line)
 		{
 			if (line->element[i][j] == '>' || line->element[i][j] == '<' || line->element[i][j] == '|')
 			{
-				if ((line->element[i][j] == '>' && line->element[i][j + 1] == '>') || (line->element[i][j] == '<' &&  line->element[i][j + 1] == '<'))
+				if ((line->element[i][j] == '>' && line->element[i][j + 1] == '>')
 					j++;
+				else if (line->element[i][j] == '<' &&  line->element[i][j + 1] == '<'))
+				{
+					here_doc(line, i, j);
+					j++;
+				}
 				j++;
 				words++;
 			}
@@ -301,15 +349,13 @@ int	w_count(t_mini *line)
 
 int	second_split(t_mini *line)
 {
-	int	i;
 	int	words;
 
-	i = 0;
 	words = w_count(line);
 	printf("words are %d\n", words);
 	line->metaed = (char **)malloc(sizeof(char *) * (words + 1));
-    if (!line->metaed)
-        printf("zsh: Cannot allocate memory\n");
+	if (!line->metaed)
+    	printf("zsh: Cannot allocate memory\n");
 	second_splitting(line);
 	return (words);
 }
@@ -317,9 +363,7 @@ int	second_split(t_mini *line)
 int	first_split(char *argv, t_mini *line)
 {
 	int words;
-    int i;
 
-    i = 0;
     words = e_count(argv);
     if (words == -1)
 		return (-1); //printf("zsh: could not find the matching quote\n");
@@ -436,7 +480,7 @@ int main(void)
 {
     t_mini  line;
     // the actual line_read will replace the line_read
-    char line_read[] = "ech'o ' ''>>$home|ed";
+    char line_read[] = "\"'$LOGNAME' $LOGNAME \" $LOGNAME\"\"";
 
     line = (t_mini){0};
     validating(line_read, &line);
