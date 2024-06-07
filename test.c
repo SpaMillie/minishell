@@ -262,49 +262,6 @@ int e_count(char *s)
 	return (words);
 }
 
-char    *resolve_heredoc(char *denom, int hd)
-{
-    //use the pipe and dup2
-    int         fd;
-    int         check;
-    char    *here_d;
-    const char  arg[256];
-
-    check = 0;
-    here_d = ft_itoa(hd);
-    fd = open(here_d, O_RDWR | O_CREAT, 0777);
-    if (fd == -1)
-        printf("error while opening file\n");
-    check = (fd, STDOUT_FILENO);
-    if (check == -1)
-        printf("error while dup2ing\n");
-    arg = readline(fd);
-    check = close (fd);
-    if (check == -1)
-        printf("error while closing file\n");
-    check = unlink("./here_doc");
-    if (check == -1)
-        printf("error while removing file\n");
-    free (denom);
-    return (here_d);
-}
-
-void    here_doc(t_mini *line, int i, int j)
-{
-    int hd_num;
-
-    hd_num = 0;
-    while (line->metaed[i] != NULL)
-    {
-        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
-        {
-            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], hd_num);
-            hd_num++;
-        }
-        i++;
-    }
-}
-
 int	w_count(t_mini *line)
 {
 	int	i;
@@ -320,13 +277,8 @@ int	w_count(t_mini *line)
 		{
 			if (line->element[i][j] == '>' || line->element[i][j] == '<' || line->element[i][j] == '|')
 			{
-				if ((line->element[i][j] == '>' && line->element[i][j + 1] == '>')
+				if ((line->element[i][j] == '>' && line->element[i][j + 1] == '>') || (line->element[i][j] == '<' && line->element[i][j + 1] == '<'))
 					j++;
-				else if (line->element[i][j] == '<' &&  line->element[i][j + 1] == '<'))
-				{
-					here_doc(line, i, j);
-					j++;
-				}
 				j++;
 				words++;
 			}
@@ -476,6 +428,93 @@ void	trim_quotes(t_mini *line)
 	}
 }
 
+static int	ft_intlen(int n)
+{
+	int	i;
+
+	i = 0;
+	while (n)
+	{
+		n /= 10;
+		i++;
+	}
+	return (i);
+}
+
+char	*simple_itoa(int n)
+{
+	int		len;
+	char	*str;
+
+	len = ft_intlen(n);
+	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		printf("malloc fail\n");
+	str[len] = '\0';
+	while (n)
+	{
+		str[len--] = n % 10 + '0';
+		n /= 10;
+	}
+	return (str);
+}
+
+char    *resolve_heredoc(char *delim, char *hd)
+{
+    //use the pipe and dup2
+    int     fd;
+	int		i;
+    int     check;
+	char	*line;
+
+    check = 0;
+	i = 0;
+    fd = open(hd, O_RDWR | O_CREAT | O_TRUNC, 0777);
+    if (fd == -1)
+        printf("error while opening file\n");
+	while (ft_strncmp(delim, line, ft_strlen(delim)) != 0)
+	{
+		line = readline("heredoc>");
+		if (line == NULL)
+			break ;
+		while (line[i] != '\0')
+			write(fd, &line[i++], 1);
+		free(line);
+	}
+	line = readline("heredoc>");
+    check = dup2(fd, STDOUT_FILENO);
+    if (check == -1)
+        printf("error while dup2ing\n");
+    line_read = readline("heredoc>");
+    check = close (fd);
+    if (check == -1)
+        printf("error while closing file\n");
+    check = unlink("./here_doc");
+    if (check == -1)
+        printf("error while removing file\n");
+    free (denom);
+    return (hd);
+}
+
+void    here_doc(t_mini *line)
+{
+    int 	hd_num;
+	int		i;
+
+    hd_num = 0;
+	i = 0;
+    while (line->metaed[i] != NULL)
+    {
+        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
+        {
+			//line->metaed[i + 1] can't be NULL and it can't be a meta which was checked before in validation (syntax errors) so no check is neccessary
+            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], simple_itoa(hd_num));
+            hd_num++;
+        }
+        i++;
+    }
+}
+
 int main(void)
 {
     t_mini  line;
@@ -485,6 +524,7 @@ int main(void)
     line = (t_mini){0};
     validating(line_read, &line);
 	trim_quotes(&line);
+	here_doc(&line);
     // for checking the arguments, ie, will be deleted after
     // int i = 0;
     // while (line.metaed[i] != NULL)
