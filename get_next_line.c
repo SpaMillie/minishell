@@ -89,7 +89,21 @@ char	*get_next_line(int fd)
 	int	countread;
 	int	to_copy;
 
-	line = ft_
+	line = ft_strdup(buf); //set the line to be equal to buf
+	while (!(newline = ft_strchr(line, '\n')) && (countread = read(fd, buf, BUFFER_SIZE))) //while there is a newline and there is something to be read
+	{
+		buf[countread] = '\0'; //end the string so you can use it
+		line = ft_strjoin(line, buf); //join the previous part of the line with the cur_buf
+	}
+	if (ft_strlen(line) == 0) //if the buffer size is too small or there is nothing to be read
+	{
+		free(line); //which was allocated before the while loop
+		return (NULL);
+	}
+	if (newline != NULL) //if there was a newline found but there was nothing more to be read?
+	{
+		to_copy = newline - line + 1; //WHY tho
+	}
 
 
 	char		*line;

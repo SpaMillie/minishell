@@ -52,7 +52,7 @@ static size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
 	return (srcsize);
 }
 
-char	*free_strjoin(char *s1, char *s2, int option)
+char	*free_strjoin(char *s1, char *s2)
 {
 	char	*str;
 	int		i;
@@ -71,15 +71,7 @@ char	*free_strjoin(char *s1, char *s2, int option)
 	while (s2[j] != '\0')
 		str[i++] = s2[j++];
 	str[i] = '\0';
-	if (option == 1)
-		free(s1);
-	else if (option == 2)
-		free(s2);
-	else
-	{
-		free(s1);
-		free(s2);
-	}
+	free(s2);
 	return (str);
 }
 
