@@ -83,7 +83,15 @@ char	*resolve_line(char **tempbuff, char **buff, int n)
 
 char	*get_next_line(int fd)
 {
-	static char	*tempbuff = NULL;
+	static char *buf[BUFFER_SIZE + 1];
+	char	*line;
+	char	*newline;
+	int	countread;
+	int	to_copy;
+
+	line = ft_
+
+
 	char		*line;
 	char		*buff;
 

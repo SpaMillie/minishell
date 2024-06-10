@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include </usr/include/readline/readline.h>
 
 
 typedef struct s_mini
@@ -49,6 +50,37 @@ static size_t  ft_strlcpy(char	*dst, const char *src, size_t dstsize)
 		dst[i] = '\0';
 	}
 	return (srcsize);
+}
+
+char	*free_strjoin(char *s1, char *s2, int option)
+{
+	char	*str;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (str == NULL)
+		return (NULL);
+	while (s1[i] != '\0')
+	{
+		str[i] = s1[i];
+		i++;
+	}
+	while (s2[j] != '\0')
+		str[i++] = s2[j++];
+	str[i] = '\0';
+	if (option == 1)
+		free(s1);
+	else if (option == 2)
+		free(s2);
+	else
+	{
+		free(s1);
+		free(s2);
+	}
+	return (str);
 }
 
 // static char	*ft_strchr(const char *s, int c)
@@ -441,6 +473,11 @@ static int	ft_intlen(int n)
 	return (i);
 }
 
+void	ft_putstr_fd(int fd, char *str)
+{
+	write(fd, str, ft_strlen(str));
+}
+
 char	*simple_itoa(int n)
 {
 	int		len;
@@ -450,7 +487,7 @@ char	*simple_itoa(int n)
 	str = malloc(sizeof(char) * (len + 1));
 	if (!str)
 		printf("malloc fail\n");
-	str[len] = '\0';
+	str[len--] = '\0';
 	while (n)
 	{
 		str[len--] = n % 10 + '0';
@@ -459,56 +496,54 @@ char	*simple_itoa(int n)
 	return (str);
 }
 
-char    *resolve_heredoc(char *delim, char *hd)
+char    *heredocing(char *delim, char *hd)
 {
-    //use the pipe and dup2
     int     fd;
-	int		i;
     int     check;
 	char	*line;
 
     check = 0;
-	i = 0;
-    fd = open(hd, O_RDWR | O_CREAT | O_TRUNC, 0777);
-    if (fd == -1)
-        printf("error while opening file\n");
+	printf("entered heredocing\n");
+	printf("delim is %s", delim);
+    fd = open(hd, O_CREAT | O_RDWR | O_TRUNC, 0777);
+	if (fd == -1)
+		printf("error while opening file\n");
+	line = readline("heredoc>");
 	while (ft_strncmp(delim, line, ft_strlen(delim)) != 0)
 	{
+		free (line);
 		line = readline("heredoc>");
+		printf("line is %s", line);
 		if (line == NULL)
 			break ;
-		while (line[i] != '\0')
-			write(fd, &line[i++], 1);
-		free(line);
+		ft_putstr_fd(fd, line);
 	}
-	line = readline("heredoc>");
-    check = dup2(fd, STDOUT_FILENO);
-    if (check == -1)
-        printf("error while dup2ing\n");
-    line_read = readline("heredoc>");
-    check = close (fd);
+    check = close(fd);
     if (check == -1)
         printf("error while closing file\n");
-    check = unlink("./here_doc");
-    if (check == -1)
-        printf("error while removing file\n");
-    free (denom);
-    return (hd);
+    free (delim);
+	printf("exited heredocing\n");
+    return (hd); //unlink heredocs in cleanup and close fds
 }
 
 void    here_doc(t_mini *line)
 {
     int 	hd_num;
 	int		i;
+	char 	*hd_name;
 
-    hd_num = 0;
+    hd_num = 1;
 	i = 0;
+	printf("at least it came here\n");
     while (line->metaed[i] != NULL)
     {
-        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i]) == 0))
+        if (ft_strncmp(line->metaed[i], "<<", ft_strlen(line->metaed[i])) == 0)
         {
+			printf("entered the loop\n");
+			hd_name = free_strjoin(".here_", simple_itoa(hd_num), 2);
+			printf("hd_name is %s\n", hd_name);
 			//line->metaed[i + 1] can't be NULL and it can't be a meta which was checked before in validation (syntax errors) so no check is neccessary
-            line->metaed[i + 1] = resolve_heredoc(line->metaed[i + 1], simple_itoa(hd_num));
+            line->metaed[i + 1] = heredocing(line->metaed[i + 1], hd_name);
             hd_num++;
         }
         i++;
@@ -519,16 +554,16 @@ int main(void)
 {
     t_mini  line;
     // the actual line_read will replace the line_read
-    char line_read[] = "\"'$LOGNAME' $LOGNAME \" $LOGNAME\"\"";
+    char line_read[] = "cat << hat";
 
     line = (t_mini){0};
     validating(line_read, &line);
 	trim_quotes(&line);
 	here_doc(&line);
     // for checking the arguments, ie, will be deleted after
-    // int i = 0;
-    // while (line.metaed[i] != NULL)
-    //     printf("%s\n", line.metaed[i++]);
+    int i = 0;
+	while (line.metaed[i] != NULL)
+		printf("%s\n", line.metaed[i++]);
 	// function (&line);
 	free_double(line.element);
 	free_double(line.metaed);
