@@ -90,7 +90,7 @@ char	*get_next_line(int fd)
 	int	to_copy;
 
 	line = ft_strdup(buf); //set the line to be equal to buf
-	while (!(newline = ft_strchr(line, '\n')) && (countread = read(fd, buf, BUFFER_SIZE))) //while there is a newline and there is something to be read
+	while (!(newline = ft_strchr(line, '\n')) && (countread = read(fd, buf, BUFFER_SIZE))) //while there is no newlines and there is something to be read
 	{
 		buf[countread] = '\0'; //end the string so you can use it
 		line = ft_strjoin(line, buf); //join the previous part of the line with the cur_buf
@@ -100,9 +100,9 @@ char	*get_next_line(int fd)
 		free(line); //which was allocated before the while loop
 		return (NULL);
 	}
-	if (newline != NULL) //if there was a newline found but there was nothing more to be read?
+	if (newline != NULL) //if there was a newline found
 	{
-		to_copy = newline - line + 1; //WHY tho
+		to_copy = newline - line + 1;
 	}
 
 
