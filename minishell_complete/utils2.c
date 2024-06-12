@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:51:42 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 20:12:09 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/12 22:06:18 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*join_and_free(char *prompt, char *str)
 	if (!temp)
 	{
 		free(prompt);
-		malloc_failure();
+		malloc_failure(line);
 	}
 	free(prompt);
 	prompt = temp;

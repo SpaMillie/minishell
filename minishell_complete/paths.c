@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:02:36 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/11 19:03:46 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/12 22:13:03 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char	*ft_getenv(char **envp, char *str)
 		{
 			path_pointer = ft_strdup(envp[i]);
 			if (!path_pointer)
-				malloc_failure();
+				malloc_failure(line); //another malloc_failure
 			break ;
 		}
 		i++;
@@ -85,7 +85,7 @@ char	*get_path(char **tokens, char **envp)
 	{
 		res = ft_strdup(tokens[0]);
 		if (!res)
-			malloc_failure();
+			malloc_failure(line);//another malloc_failure1 
 		return (res);
 	}
 	paths = create_paths(tokens, envp);

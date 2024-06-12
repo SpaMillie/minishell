@@ -24,7 +24,7 @@ static void	first_splitting(char *s, t_mini *line)
 			}
             line->element[j++] = ft_substr(s, prev_i, i - prev_i);
             if (line->element[j - 1] == NULL)
-                malloc_failure();
+                malloc_failure(line);
 		}
 	}
 	line->element[j] = NULL;

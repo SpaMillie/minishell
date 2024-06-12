@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:31:15 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/11 16:54:34 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/12 22:11:22 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static char	*get_substring(char *str, int j)
 	len = len - start;
 	substring = ft_substr(str, start, len);
 	if (!substring)
-		malloc_failure();
+		return (NULL); //this was malloc_failure
 	return (substring);
 }
 
@@ -64,7 +64,7 @@ static void	duplicate(t_mini *line, char **new_tokens, int i)
 	}
 	new_tokens[i] = ft_strdup(line->metaed[i]);
 	if (!new_tokens[i])
-		malloc_failure();
+		malloc_failure(line);
 }
 
 static void	special_cases(t_mini *line, char **new_tokens, int loop, int i, int j)
@@ -110,6 +110,8 @@ static void	expand(t_mini *line, char **new_tokens, int i)
 			{
 				j++;
 				substring = get_substring(line->metaed[i], j);
+				if (!substring)
+					malloc_failure(line); //might not be the right way
 				env_value = ft_getenv(line->envp, substring);
 				if (!env_value)
 					dup_or_join(new_tokens, loop, i, "");
@@ -121,6 +123,8 @@ static void	expand(t_mini *line, char **new_tokens, int i)
 		else
 		{
 			substring = get_substring(line->metaed[i], j);
+			if (!substring)
+					malloc_failure(line);//might not be the right way 
 			dup_or_join(new_tokens, loop, i, substring);
 		}
 		j += ft_strlen(substring);

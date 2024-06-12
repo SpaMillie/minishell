@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 20:09:56 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/12 22:05:05 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int			is_whitespace(char c);
 void		print_error(char *message, char **args);
 char		**malloc_2d(char **arr);
 char		**envp_dup(char **envp);
-void		malloc_failure(void);
+void		malloc_failure(t_mini *line);
 //utils2.c
 void		cleanup(t_mini *line, t_tokens *token, char *line_read);
 void		free_2d(char **tab);
