@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:43:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 14:43:59 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/13 19:49:43 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void	exit_cmd(char **args, t_mini *line)
 	i = 0;
 	while (args[i])
 		i++;
+	printf("i is %d\n", i);
 	if (i > 2)
 	{
 		line->err_num = 1;

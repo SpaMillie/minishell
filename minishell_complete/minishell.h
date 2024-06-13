@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 17:04:18 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 19:42:01 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct s_alloc
 
 //builtin_check.c
 void		execute_builtin(t_tokens *token, t_mini *line);
-int			is_builtin(t_tokens *token);
+int			is_builtin(char *str);
 //cd.c
 void		cd(char **args, t_mini *line);
 //echo-pwd-env.c

@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:00:48 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 13:40:17 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 19:19:04 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,12 @@ void	print_error(char *message, char **args)
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(args[0], 2);
 	ft_putstr_fd(": ", 2);
-	if (!args[2])
-	{
-		ft_putstr_fd(args[1], 2);
-		ft_putstr_fd(": ", 2);
-	}
+	//do we need this other part since bash outputs zsh: command not found: echp?
+	// if (!args[2])
+	// {
+	// 	ft_putstr_fd(args[1], 2);
+	// 	ft_putstr_fd(": ", 2);
+	// }
 	ft_putendl_fd(message, 2);
 }
 

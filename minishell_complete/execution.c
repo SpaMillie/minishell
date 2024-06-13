@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:06:44 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 17:01:23 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 20:09:10 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ static int	child(t_tokens *token, t_mini *line, int in_fd, int *fd)
 		close(fd[1]);
 	}
 	redirections(&token[line->i]);
-	if (is_builtin(&token[line->i]))
+	printf("checkpoint2 %s\n", token[line->i].command[0]);
+	if (is_builtin(token[line->i].command[0]))
 	{
 		builtin_execution(token, line); // Execute the built-in
 		exit(line->err_num);
@@ -116,4 +117,5 @@ void	execute(t_tokens **token, t_mini *line)
 		line->i++;
 	}
 	wait_for_child(line);
+	printf("waited for child\n");
 }
