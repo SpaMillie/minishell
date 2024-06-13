@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:51:42 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 22:06:18 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 13:50:29 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,6 @@ void	cleanup(t_mini *line, t_tokens *token, char *line_read)
 	free_2d(token->command);
 	free_2d(token->redirect);
 	free(token);
-	free(line);
-}
-
-void	free_2d(char **tab)
-{
-	size_t	i;
-
-	i = 0;
-	while (tab[i])
-	{
-		free(tab[i]);
-		i++;
-	}
-	free(tab);
 }
 
 void	print_2d(char **tab)
@@ -52,13 +38,15 @@ char	*join_and_free(char *prompt, char *str)
 {
 	char	*temp;
 
+	if (!prompt)
+		return (NULL); //if the previous join_and_free fails so we don't add checks after everything
 	temp = ft_strjoin(prompt, str);
+	free(prompt);
 	if (!temp)
 	{
-		free(prompt);
-		malloc_failure(line);
+		//malloc_failure
+		return (NULL);
 	}
-	free(prompt);
 	prompt = temp;
 	return (prompt);
 }

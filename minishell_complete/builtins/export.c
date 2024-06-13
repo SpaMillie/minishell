@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:28:58 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 22:06:18 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/12 14:46:51 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static char	*env_exists(char *arg, t_mini *line)
 		{
 			existing = malloc(sizeof(char) * len + 1);
 			if (!existing)
-				malloc_failure(line);
+				malloc_failure();
 			existing = get_existing_name(existing, line, i);
 			return (existing);
 		}
@@ -73,34 +73,22 @@ void	export(char *arg, t_mini *line)
 	unset_existing(arg, line);
 	new_envp = malloc_2d(line->envp);
 	if (!new_envp)
-		malloc_failure(line);
+		malloc_failure();
 	i = 0;
 	while (line->envp[i])
 	{
 		new_envp[i] = ft_strdup(line->envp[i]);
 		if (!new_envp[i])
-			malloc_failure(line);
+			malloc_failure();
 		i++;
 	}
 	new_envp[i] = ft_strdup(arg);
 	if (!new_envp[i])
-		malloc_failure(line);
+		malloc_failure();
 	i++;
 	new_envp[i] = NULL;
 	free_2d(line->envp);
 	line->envp = new_envp;
-}
-
-static void	print_declare(t_mini *line)
-{
-	int	i;
-
-	i = 0;
-	while (line->envp[i])
-	{
-		ft_printf("declare -x %s\n", line->envp[i]);
-		i++;
-	}
 }
 
 void	export_cmd(char **args, t_mini *line)
@@ -108,7 +96,14 @@ void	export_cmd(char **args, t_mini *line)
 	int	i;
 
 	if (!args[1])
-		print_declare(line);
+	{
+		i = 0;
+		while (line->envp[i])
+		{
+			ft_printf("declare -x %s\n", line->envp[i]);
+			i++;
+		}
+	}
 	else
 	{
 		if (export_unset_error_check(args, line))

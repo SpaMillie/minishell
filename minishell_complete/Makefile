@@ -6,7 +6,7 @@
 #    By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/15 10:22:54 by tparratt          #+#    #+#              #
-#    Updated: 2024/06/12 21:14:59 by mspasic          ###   ########.fr        #
+#    Updated: 2024/06/13 13:41:22 by mspasic          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ SRC			=	minishell.c \
 					paths.c \
 					utils.c \
 					utils2.c \
+					error.c \
 					execution.c \
 					redirect.c \
 					signals.c \

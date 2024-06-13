@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 22:05:05 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 14:15:35 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@
 # include <termios.h>
 # include <string.h>
 
-typedef struct s_expansion_data
-{
-	char	**new_tokens;
-	int		loop;
-	int		i;
-	int		j;
-}				t_expansion_data;
+// typedef struct s_expansion_data
+// {
+// 	char	**new_tokens;
+// 	int		loop;
+// 	int		i;
+// 	int		j;
+// }				t_expansion_data;
 
 typedef struct s_mini
 {
@@ -39,6 +39,7 @@ typedef struct s_mini
 	char	**envp;
 	int		err_num;
 	int		flag;
+	int		i;
 }				t_mini;
 
 typedef struct s_tokens
@@ -70,10 +71,21 @@ void		export(char *arg, t_mini *line);
 void		unset_cmd(char **args, t_mini *line);
 void		unset(char *arg, t_mini *line);
 int			export_unset_error_check(char **args, t_mini *line);
+//env.c
+char		*ft_getenv(char **envp, char *str);
+char		*get_env_value(char **envp, char *str, t_mini *line);
+//error.c
+void		free_2d(char **tab);
+void		malloc_failure(t_mini *line);
+void		void_malloc_failure(void);
 //execution.c
 void		execute(t_tokens *token, t_mini *line);
 //expansion.c
 void		expansion(t_mini *line);
+//expansion2.c
+char		*get_substring(char *s, int j);
+void		dup_or_join(char **new_tokens, int loop, int i, char *str);
+void		duplicate(t_mini *line, char **new_tokens);
 //first_split.c
 int			first_split(char *argv, t_mini *line);
 //heredoc.c
@@ -82,8 +94,6 @@ void    	here_doc(t_mini *line);
 void		tokenising(t_mini *line, t_tokens *token);
 void		p_count(t_mini *line);
 //paths.c
-char		*ft_getenv(char **envp, char *str);
-char		*get_env_value(char **envp, char *str);
 char		*get_path(char **tokens, char **envp);
 //redirect.c
 void		redirections(t_tokens *token);
@@ -99,10 +109,8 @@ int			is_whitespace(char c);
 void		print_error(char *message, char **args);
 char		**malloc_2d(char **arr);
 char		**envp_dup(char **envp);
-void		malloc_failure(t_mini *line);
 //utils2.c
 void		cleanup(t_mini *line, t_tokens *token, char *line_read);
-void		free_2d(char **tab);
 void		print_2d(char **tab);
 char		*join_and_free(char *prompt, char *str);
 //validation.c

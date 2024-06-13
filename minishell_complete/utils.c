@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:00:48 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 19:14:34 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 13:40:17 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,13 @@ void	print_error(char *message, char **args)
 	ft_putendl_fd(message, 2);
 }
 
-int	is_whitespace(char c)
+int	is_whitespace(char c) //can we combine is it whitespace and is it space?
 {
 	if (c == ' ' || c == '\t' || c == '\n'
 		|| c == '\v' || c == '\f' || c == '\r')
 		return (1);
 	else
 		return (0);
-}
-
-void	malloc_failure(void)
-{
-	ft_putendl_fd("minishell: malloc failure", 2);
-	//free everything
-	exit(1);
 }
 
 char	**malloc_2d(char **arr)

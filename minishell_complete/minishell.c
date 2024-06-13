@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 22:09:36 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 13:34:12 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,5 +126,7 @@ int	main(int argc, char **argv, char **envp)
 			return (1);
 		printf("exited the condition\n");
 	}
+	else
+		ft_putendl_fd("Minishell cannot take arguments", 2);
 	return (0);
 }
