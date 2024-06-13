@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:28:58 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:52:45 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 21:17:42 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static char	*env_exists(char *arg, t_mini *line)
 	{
 		if (!ft_strncmp(line->envp[i], arg, len))
 		{
-			existing = malloc(sizeof(char) * len + 1);
+			existing = malloc(sizeof(char) * (len + 1));
 			if (!existing)
 				malloc_failure(line);
 			existing = get_existing_name(existing, line, i);

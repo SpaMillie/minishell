@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 20:12:24 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 22:00:29 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,8 @@ static int	minishell_loop(t_mini *line)
 		if (prompting(&line_read) == 1)
 			return (1);
 		printf("read line is %s\n", line_read);
+		if (!line_read)
+			return (2);
 		if (ft_strlen(line_read) == 0)
 			continue ;
 		add_history(line_read);
@@ -102,11 +104,13 @@ static int	minishell_loop(t_mini *line)
 		printf("does it reach here?\n");
 		printf("here %s\n", token->command[0]);
 		if (token->command[0] && ft_strncmp(token->command[0], "exit", ft_strlen(token->command[0])) == 0)
+		{
+			cleanup(line, &token, line_read, 1);
 			break ;
-		cleanup(line, &token, line_read);
+		}
+		cleanup(line, &token, line_read, 0);
 		printf("does it clean up?\n");
 	}
-	cleanup(line, &token, line_read);
 	printf("exited minishell_loop\n");
 	return (0);
 }
@@ -115,6 +119,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_mini				line;
 	struct sigaction	sa;
+	int	check;
 
 	(void)argv;
 	line = (t_mini){0};
@@ -129,9 +134,13 @@ int	main(int argc, char **argv, char **envp)
 		sa.sa_handler = handle_signal;
         sigaction(SIGINT, &sa, NULL);
         sigaction(SIGQUIT, &sa, NULL);
-		if (minishell_loop(&line) == 1)
+		check = minishell_loop(&line);
+		if (check == 1)
 			return (1);
+		else if (check == 2)
+			free_2d(line.envp);
 		printf("exited the condition\n");
+
 	}
 	else
 		ft_putendl_fd("Minishell cannot take arguments", 2);

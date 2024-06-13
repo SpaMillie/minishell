@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 19:42:01 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 21:40:09 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void		print_error(char *message, char **args);
 char		**malloc_2d(char **arr);
 char		**envp_dup(char **envp);
 //utils2.c
-void		cleanup(t_mini *line, t_tokens **token, char *line_read);
+void		cleanup(t_mini *line, t_tokens **token, char *line_read, int option);
 void		print_2d(char **tab);
 char		*join_and_free(char *prompt, char *str);
 //validation.c

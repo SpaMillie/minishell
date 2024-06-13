@@ -6,20 +6,23 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:51:42 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 17:05:45 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 21:49:52 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	cleanup(t_mini *line, t_tokens **token, char *line_read)
+void	cleanup(t_mini *line, t_tokens **token, char *line_read, int option)
 {
 	int	i;
 
 	i = 0;
-	free(line_read);
+	if (line_read)
+		free(line_read);
 	free_2d(line->element);
 	free_2d(line->metaed);
+	if (option)
+		free_2d(line->envp);
 	while (i < line->pipe_num)
 	{
 		free_2d(token[i]->command);
