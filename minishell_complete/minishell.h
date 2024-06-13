@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:58:59 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 17:04:18 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void		free_2d(char **tab);
 void		malloc_failure(t_mini *line);
 void		void_malloc_failure(void);
 //execution.c
-void		execute(t_tokens *token, t_mini *line);
+void		execute(t_tokens **token, t_mini *line);
 //expansion.c
 void		expansion(t_mini *line);
 //expansion2.c
@@ -112,7 +112,7 @@ void		print_error(char *message, char **args);
 char		**malloc_2d(char **arr);
 char		**envp_dup(char **envp);
 //utils2.c
-void		cleanup(t_mini *line, t_tokens *token, char *line_read);
+void		cleanup(t_mini *line, t_tokens **token, char *line_read);
 void		print_2d(char **tab);
 char		*join_and_free(char *prompt, char *str);
 //validation.c

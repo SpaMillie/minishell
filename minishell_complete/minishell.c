@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 13:34:12 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 17:00:32 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,25 +57,25 @@ static char	*create_prompt(void)
 // 		i++;
 // 	}
 // }
-static void	to_token(t_mini *line, t_tokens *token)
+static void	to_token(t_mini *line, t_tokens **token)
 {			
 		p_count(line);
-		token = malloc(sizeof(t_tokens) * (line->pipe_num));
-		if (!token)
+		*token = malloc(sizeof(t_tokens) * (line->pipe_num));
+		if (!(*token))
 			malloc_failure(line);
-		tokenising(line, token);
+		tokenising(line, *token);
 }
 
-static int	prompting(char *line_read)
+static int	prompting(char **line_read)
 {			
 		char *prompt;
 
 		prompt = create_prompt();
-		line_read = readline(prompt);
+		*line_read = readline(prompt);
 		if (!line_read)
 			return (1); // NULL if failed to allocate?
 		free(prompt);
-		return (1);
+		return (0);
 }
 
 static int	minishell_loop(t_mini *line)
@@ -88,17 +88,17 @@ static int	minishell_loop(t_mini *line)
 	printf("entered minishell_loop\n");
 	while (1)
 	{			
-		if (prompting(line_read) == 1)
+		if (prompting(&line_read) == 1)
 			return (1);
+		printf("read line is %s\n", line_read);
 		if (ft_strlen(line_read) == 0)
 			continue ;
 		add_history(line_read);
-		to_token(line, token);
 		validating(line_read, line);
 		expansion(line);
-		to_token(line, token);
-		execute(token, line);
-		cleanup(line, token, line_read);
+		to_token(line, &token);
+		execute(&token, line);
+		cleanup(line, &token, line_read);
 	}
 	printf("exited minishell_loop\n");
 	return (0);

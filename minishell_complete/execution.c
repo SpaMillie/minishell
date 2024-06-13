@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:06:44 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:09:57 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 17:01:23 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,8 @@ static void	wait_for_child(t_mini *line)
 	while (line->i < line->pipe_num)
 	{
 		wait(&status);
-		if (line->flag == 0)
-		{
-			if (WIFEXITED(status))
-				line->err_num = WEXITSTATUS(status);
-		}
+		if (WIFEXITED(status))
+			line->err_num = WEXITSTATUS(status);
 		line->i++;
 	}
 }
@@ -56,38 +53,47 @@ static int	parent(int in_fd, t_mini *line, int *fd)
 	return (in_fd);
 }
 
+static void	builtin_execution(t_tokens *token, t_mini *line)
+{
+	redirections(&token[line->i]); // Handle redirections for the built-in //token->redrection[line->i]
+	execute_builtin(&token[line->i], line); // Execute the built-in
+	//line->flag = 1;
+	//line->i++; // Move to the next command in the pipeline
+}
+
 static int	child(t_tokens *token, t_mini *line, int in_fd, int *fd)
 {
+	// printf("command is %s\n", token[line->i].command[0]);
 	if (!ft_strncmp(token[line->i].command[0], "./minishell", 11))
 		shell_lvl_check(line);
 	if (in_fd != STDIN_FILENO) // Redirect input
 	{
-		if (dup2(in_fd, STDIN_FILENO) == -1) //error when dup2 fails? closing fds?
+		if (dup2(in_fd, STDIN_FILENO) == -1)
 			exit(1);
 		close(in_fd);
 	}
 	if (line->i < line->pipe_num - 1) // Redirect output
 	{
 		close(fd[0]);
-		if (dup2(fd[1], STDOUT_FILENO) == -1) //error when dup2 fails? closing fds? 
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
 			exit(1);
 		close(fd[1]);
 	}
 	redirections(&token[line->i]);
-	if (execve(get_path(token[line->i].command, line->envp), token[line->i].command, line->envp) == -1) //no need for the check? execve should not continue unless it fails
-		exit(1);
+	if (is_builtin(&token[line->i]))
+	{
+		builtin_execution(token, line); // Execute the built-in
+		exit(line->err_num);
+	}
+	else
+	{
+		if (execve(get_path(token[line->i].command, line->envp), token[line->i].command, line->envp) == -1)
+			exit(1);
+	}
 	return (in_fd);
 }
 
-static void	builtin_execution(t_tokens *token, t_mini *line)
-{
-	redirections(&token[line->i]); // Handle redirections for the built-in
-	execute_builtin(&token[line->i], line); // Execute the built-in
-	line->flag = 1;
-	line->i++; // Move to the next command in the pipeline
-}
-
-void	execute(t_tokens *token, t_mini *line)
+void	execute(t_tokens **token, t_mini *line)
 {
 	int		fd[2];
 	pid_t	pid;
@@ -95,44 +101,16 @@ void	execute(t_tokens *token, t_mini *line)
 
 	in_fd = STDIN_FILENO;
 	line->i = 0;
+	// printf("token is %s\n", token[line->i]->command[0]);
 	while (line->i < line->pipe_num)
 	{
-		line->flag = 0;
 		if (line->i < line->pipe_num - 1 && pipe(fd) == -1)
 			exit(1);
-		// if (is_builtin(&token[line->i]))
-		// {
-		// 	builtin_execution(token, line);
-		// 	continue ;
-		// }
 		pid = fork();
-		if (pid == -1) //clean up?
+		if (pid == -1)
 			exit(1);
 		else if (pid == 0)
-		{
-			if (is_builtin(&token[line->i]))
-			{
-				// Redirect input
-				if (in_fd != STDIN_FILENO)
-				{
-					if (dup2(in_fd, STDIN_FILENO) == -1) //error when dup2 fails? closing fds?  
-						exit(1);
-					close(in_fd);
-				}
-				// Redirect output
-				if (line->i < line->pipe_num - 1)
-				{
-					close(fd[0]);
-					if (dup2(fd[1], STDOUT_FILENO) == -1) //error when dup2 fails? closing fds?  
-						exit(1);
-					close(fd[1]);
-				}
-				builtin_execution(token, line); // Execute the built-in
-				exit(0); // Exit the child process
-			}
-			else
-				in_fd = child(token, line, in_fd, fd);
-		}
+			in_fd = child(*token, line, in_fd, fd);
 		else
 			in_fd = parent(in_fd, line, fd);
 		line->i++;
