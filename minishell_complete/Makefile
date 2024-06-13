@@ -6,7 +6,7 @@
 #    By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/15 10:22:54 by tparratt          #+#    #+#              #
-#    Updated: 2024/06/13 13:41:22 by mspasic          ###   ########.fr        #
+#    Updated: 2024/06/13 15:03:34 by mspasic          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ SRC			=	minishell.c \
 					trim.c \
 					parsing.c \
 					expansion.c \
+					expansion2.c \
+					env.c \
 					paths.c \
 					utils.c \
 					utils2.c \
@@ -30,6 +32,7 @@ SRC			=	minishell.c \
 					builtins/echo-pwd-env.c \
 					builtins/cd.c \
 					builtins/export.c \
+					builtins/exit.c \
 					builtins/unset.c \
 					builtins/builtin_check.c \
 

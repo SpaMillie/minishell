@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:15:35 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/13 14:58:59 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void		cd(char **args, t_mini *line);
 void		echo(char **args);
 void		pwd(void);
 void		env(char **args, t_mini *line);
+void		exit_cmd(char **args, t_mini *line);
+//exit.c
 void		exit_cmd(char **args, t_mini *line);
 //export.c
 void		export_cmd(char **args, t_mini *line);
