@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 22:00:29 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/14 19:30:45 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_mini				line;
 	struct sigaction	sa;
-	int	check;
+	int					check;
 
 	(void)argv;
 	line = (t_mini){0};

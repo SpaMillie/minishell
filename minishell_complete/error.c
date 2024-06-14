@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:39:35 by mspasic           #+#    #+#             */
-/*   Updated: 2024/06/13 13:57:05 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/14 21:06:09 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,15 @@ void	void_malloc_failure(void)
 {
 	ft_putendl_fd("minishell: malloc failure", 2);
 	exit(1);
+}
+int	syntax_error(t_mini *line, char c, int i)
+{
+	if (i == 1)
+
+	ft_putendl_fd("minishell: malloc failure", 2);
+	ft_putendl_fd("minishell: malloc failure", 2);
+	ft_putendl_fd("minishell: malloc failure", 2);
+	ft_putendl_fd("minishell: malloc failure", 2);
+	ft_putendl_fd("minishell: malloc failure", 2);
+	ft_putendl_fd("minishell: malloc failure", 2);
 }
