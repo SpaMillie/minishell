@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:50:13 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:03:13 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/15 14:26:38 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,9 @@ char	*ft_getenv(char **envp, char *str)
 {
 	int		i;
 	char	*path_pointer;
-	int		j;
 	int		len;
 
 	i = 0;
-	j = 0;
 	path_pointer = NULL;
 	len = ft_strlen(str);
 	while (envp[i])
