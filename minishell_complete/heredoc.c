@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 15:22:45 by mspasic           #+#    #+#             */
-/*   Updated: 2024/06/15 14:48:11 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/17 12:52:05 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static char    *heredocing(char *delim, char *hd)
 		printf("error while opening file\n");
 	line = readline("heredoc> ");
 	ft_putendl_fd(line, fd); // Tom added this
-	while (ft_strncmp(delim, line, ft_strlen(delim)) != 0)
+	while (ft_strncmp(delim, line, ft_strlen(line)) != 0)
 	{
 		free (line);
 		line = readline("heredoc> ");
@@ -107,6 +107,8 @@ void    here_doc(t_mini *line)
     {
         if (ft_strncmp(line->metaed[i], "<<", 3) == 0) // Tom changed this
         {
+			printf("line[i] is %s\n", line->metaed[i]);
+			printf("line[i + 1] is %s\n", line->metaed[i + 1]);
 			hd_name = here_strjoin(".here_", simple_itoa(hd_num));
 			//line->metaed[i + 1] can't be NULL and it can't be a meta which was checked before in validation (syntax errors) so no check is neccessary
             line->metaed[i + 1] = heredocing(line->metaed[i + 1], hd_name);
