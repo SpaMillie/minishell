@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_check.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/15 13:47:13 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 19:44:48 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/19 17:05:45 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int	is_builtin(char *str)
 
 void	execute_builtin(t_tokens *token, t_mini *line)
 {
-	printf("execute_builtin %s\n", token->command[0]);
 	if (!ft_strncmp(token->command[0], "echo", 5))
 		echo(token->command);
 	else if (!ft_strncmp(token->command[0], "pwd", 4))

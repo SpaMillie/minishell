@@ -3,30 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:00:48 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 21:26:07 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/18 15:13:03 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_error(char *message, char **args)
+void	print_error(char *message, char **args) // this is wrong if there are more than 2 args
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(args[0], 2);
 	ft_putstr_fd(": ", 2);
-	//do we need this other part since bash outputs zsh: command not found: echp?
-	// if (!args[2])
-	// {
-	// 	ft_putstr_fd(args[1], 2);
-	// 	ft_putstr_fd(": ", 2);
-	// }
+	if (args[1])
+	{
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd(": ", 2);
+	}
 	ft_putendl_fd(message, 2);
 }
 
-int	is_whitespace(char c) //can we combine is it whitespace and is it space?
+int	is_whitespace(char c) //can we combine is_whitespace and is_it_space?
 {
 	if (c == ' ' || c == '\t' || c == '\n'
 		|| c == '\v' || c == '\f' || c == '\r')

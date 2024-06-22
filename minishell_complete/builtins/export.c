@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 14:28:58 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 21:17:42 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/19 11:38:30 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,13 @@ static char	*env_exists(char *arg, t_mini *line)
 	len = 0;
 	while (arg[len] != '=' && arg[len] != '\0')
 		len++;
+	len++;
 	i = 0;
 	while (line->envp[i])
 	{
 		if (!ft_strncmp(line->envp[i], arg, len))
 		{
-			existing = malloc(sizeof(char) * (len + 1));
+			existing = malloc(sizeof(char) * len + 1);
 			if (!existing)
 				malloc_failure(line);
 			existing = get_existing_name(existing, line, i);

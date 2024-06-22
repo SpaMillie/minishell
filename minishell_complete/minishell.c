@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/15 14:33:07 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:15:42 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static char	*create_prompt(void)
 		username = "unknown";
 	hostname = getenv("HOSTNAME");
 	if (!hostname)
-		hostname = "unknown";
+		hostname = "hive";
 	prompt = ft_strdup(username);
 	prompt = join_and_free(prompt, "@");
 	prompt = join_and_free(prompt, hostname);
@@ -38,25 +38,6 @@ static char	*create_prompt(void)
 	return (prompt);
 }
 
-// static void	free_all(char *line_read, t_tokens *token, t_mini *line)
-// {
-// 	int	i;
-
-// 	free(line_read);
-// 	free_2d(line->metaed);
-// 	i = 0;
-// 	while (token[i].command && token[i].command[0])
-// 	{
-// 		free_2d(token[i].command);
-// 		i++;
-// 	}
-// 	i = 0;
-// 	while (token[i].redirect && token[i].redirect[0])
-// 	{
-// 		free_2d(token[i].redirect);
-// 		i++;
-// 	}
-// }
 static void	to_token(t_mini *line, t_tokens **token)
 {			
 		p_count(line);
@@ -85,12 +66,12 @@ static int	minishell_loop(t_mini *line)
 	
 	token = (t_tokens *){0};
 	line_read = NULL;
-	printf("entered minishell_loop\n");
+	// printf("entered minishell_loop\n");
 	while (1)
 	{			
 		if (prompting(&line_read) == 1)
 			return (1);
-		printf("read line is %s\n", line_read);
+		// printf("read line is %s\n", line_read);
 		if (!line_read)
 			return (2);
 		if (ft_strlen(line_read) == 0)
@@ -100,19 +81,19 @@ static int	minishell_loop(t_mini *line)
 			continue ;
 		expansion(line);
 		to_token(line, &token);
-		printf("arrived here %s\n", token->command[0]);
-		execute(&token, line);
-		printf("does it reach here?\n");
-		printf("here %s\n", token->command[0]);
+		// printf("arrived here %s\n", token->command[0]);
+		execute(token, line);
+		// printf("does it reach here?\n");
+		// printf("here %s\n", token->command[0]);
 		if (token->command[0] && ft_strncmp(token->command[0], "exit", ft_strlen(token->command[0])) == 0)
 		{
-			cleanup(line, &token, line_read, 1);
+			cleanup(line, token, line_read, 1);
 			break ;
 		}
-		cleanup(line, &token, line_read, 0);
-		printf("does it clean up?\n");
+		cleanup(line, token, line_read, 0);
+		// printf("does it clean up?\n");
 	}
-	printf("exited minishell_loop\n");
+	// printf("exited minishell_loop\n");
 	return (0);
 }
 
@@ -131,8 +112,10 @@ int	main(int argc, char **argv, char **envp)
 	set_term_attr();
 	if (argc == 1)
 	{
-		printf("entered the condition\n");
+		ft_memset(&sa, 0, sizeof(sa));
 		sa.sa_handler = handle_signal;
+		sigemptyset(&sa.sa_mask);
+		sa.sa_flags = 0;
         sigaction(SIGINT, &sa, NULL);
         sigaction(SIGQUIT, &sa, NULL);
 		check = minishell_loop(&line);
@@ -140,8 +123,6 @@ int	main(int argc, char **argv, char **envp)
 			return (1);
 		else if (check == 2)
 			free_2d(line.envp);
-		printf("exited the condition\n");
-
 	}
 	else
 		ft_putendl_fd("Minishell cannot take arguments", 2);

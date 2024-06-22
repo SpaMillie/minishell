@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+         #
+#    By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/15 10:22:54 by tparratt          #+#    #+#              #
-#    Updated: 2024/06/13 15:11:59 by mspasic          ###   ########.fr        #
+#    Updated: 2024/06/20 15:27:39 by tparratt         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,21 +20,23 @@ SRC			=	minishell.c \
 					parsing.c \
 					expansion.c \
 					expansion2.c \
-					env.c \
 					paths.c \
+					env.c \
 					utils.c \
 					utils2.c \
-					error.c \
 					execution.c \
+					execution2.c \
+					error.c \
 					redirect.c \
 					signals.c \
 					heredoc.c \
 					builtins/echo-pwd-env.c \
 					builtins/cd.c \
 					builtins/export.c \
-					builtins/exit.c \
+					builtins/export_unset_error.c \
 					builtins/unset.c \
 					builtins/builtin_check.c \
+					builtins/exit.c \
 
 LIBFT		=	libft/libft.a
 

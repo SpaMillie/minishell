@@ -3,34 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   expansion2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 17:21:50 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:13:46 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/19 14:28:21 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h" //tbd error_handling and cleanup 
+#include "minishell.h"
 
 static int	get_len(char *s, int start, int len)
 {
-	if (s[start - 1] == '$')
+	if (start > 0 && s[start - 1] == '$')
 	{
-		while (s[len] != '$' && s[len] != '\0' && (ft_isalnum(s[len])
-				|| s[len] == '_' || s[len] == '?' || is_whitespace(s[len])))
+		if (is_whitespace(s[len]))
 		{
-			len++;
-			if (s[len] == '?')
-				break ;
+			while (s[len] != '$' && s[len] != '\0' && (ft_isalnum(s[len])
+					|| s[len] == '_' || s[len] == '?' || is_whitespace(s[len])))
+				len++;
+		}
+		else
+		{
+			while (s[len] != '$' && s[len] != '\0' && (ft_isalnum(s[len])
+					|| s[len] == '_' || s[len] == '?'))
+			{
+				len++;
+				if ((s[len] == '?' && s[len - 1] == '?')
+					|| (ft_isalnum(s[len]) && s[len - 1] == '?'))
+					break ;
+			}
 		}
 	}
 	else
-	{
 		while (s[len] != '$' && s[len] != '\0')
 			len++;
-	}
-	len = len - start;
-	return (len);
+	return (len - start);
 }
 
 char	*get_substring(char *s, int j)
@@ -41,6 +48,8 @@ char	*get_substring(char *s, int j)
 
 	start = j;
 	len = j;
+	if (start < 0 || start >= (int)ft_strlen(s))
+		return (ft_strdup(""));
 	len = get_len(s, start, len);
 	substring = ft_substr(s, start, len);
 	if (!substring)
@@ -57,8 +66,7 @@ void	dup_or_join(char **new_tokens, int loop, int i, char *str)
 			void_malloc_failure();
 	}
 	else
-		new_tokens[i] = join_and_free(new_tokens[i], str); //join_and_free should have malloc_fail check inside i think
-	ft_printf("new_tokens = %s\n", new_tokens[i]);
+		new_tokens[i] = join_and_free(new_tokens[i], str);
 }
 
 void	duplicate(t_mini *line, char **new_tokens)

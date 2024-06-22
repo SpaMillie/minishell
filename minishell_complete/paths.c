@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   paths.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:02:36 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:48:06 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/20 11:26:32 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,8 @@ char	*get_path(char **tokens, char **envp)
 	char	*res;
 	char	**paths;
 
-	if (!ft_strncmp(tokens[0], "./", 2))
-	{
-		res = ft_strdup(tokens[0]);
-		if (!res)
-			void_malloc_failure();
-		return (res);
-	}
+	if (ft_strchr(tokens[0], '/'))
+		return(tokens[0]);
 	paths = create_paths(tokens, envp);
 	if (!paths)
 		return (NULL);

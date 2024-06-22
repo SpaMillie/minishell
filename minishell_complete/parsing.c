@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 15:05:39 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/12 18:44:49 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/14 20:13:43 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,16 @@ static void	copy_tokens(t_mini *line, t_tokens *token, int pre_i, int i)
         {
             token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
 			if (!(token->redirect[k - 1]))
-				printf("mallocfail 357\n");
-            token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
+				malloc_failure(line);
+			token->redirect[k++] = ft_strdup(line->metaed[pre_i++]);
 			if (!(token->redirect[k - 1]))
-				printf("mallocfail 360\n");
+				malloc_failure(line);
         }
         else
 		{
             token->command[j++] = ft_strdup(line->metaed[pre_i++]);
 			if (!(token->command[j - 1]))
-				printf("mallocfail 366\n");
+				malloc_failure(line);
 		}
 	}
     token->redirect[k] = NULL;
@@ -105,7 +105,7 @@ void	tokenising(t_mini *line, t_tokens *token)
 		i = c_count(line, &ed, i);
 		check = allocating_token(&token[j], &ed);
 		if (check == -1)
-			printf("mallocerror\n");
+			malloc_failure(line);
 		copy_tokens(line, &token[j], prev_i, i);
 		if (line->metaed[i] != NULL && ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
 			i++;

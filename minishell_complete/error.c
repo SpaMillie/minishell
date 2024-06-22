@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 13:39:35 by mspasic           #+#    #+#             */
-/*   Updated: 2024/06/15 15:11:24 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/15 15:13:13 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,14 @@ int	syntax_error(t_mini *line, char *s, int i)
 		return (1);
 	}
 	else if (i == 2)
-		ft_putendl_fd("minishell: parse error near `|'", 2);
+		ft_putendl_fd("minishell: parse error near '|'", 2);
 	else if (i == 3)
 	{
 		str = ft_strjoin("minishell: parse error near ", s);
 		if (!str)
 			malloc_failure(line);
 		ft_putendl_fd(str, 2);
-		free(str);
+		free (str);
 	}
 	else if (i == 4)
 		ft_putendl_fd("minishell: parse error near \\n", 2);

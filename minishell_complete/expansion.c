@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:31:15 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 14:15:11 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/19 12:53:12 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h" //tbd error_handling and cleanup
+#include "minishell.h"
 
 static char	*nothing_to_expand(t_mini *line, char **new_tokens, int loop, int j)
 {

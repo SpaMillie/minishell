@@ -6,7 +6,7 @@
 /*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 11:48:57 by mspasic           #+#    #+#             */
-/*   Updated: 2024/06/17 12:43:11 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/15 14:50:06 by mspasic          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int validating(char *argv, t_mini *line)
 
     i = 0;
 	if (first_split(argv, line) == -1)
-        return (syntax_error(line, NULL, 1));
+		return (syntax_error(line, NULL, 1));
 	// i = 0;
     // while (line->element[i] != NULL)
     //     printf("%s\n", line->element[i++]);
@@ -75,19 +75,17 @@ int validating(char *argv, t_mini *line)
     // while (line->metaed[i] != NULL)
     //     printf("%s\n", line->metaed[i++]);
     if (ft_strlen(line->metaed[i]) != 0 && ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0)
-        return (syntax_error(line, NULL, 2));
+		return (syntax_error(line, NULL, 2));
     while (i + 1 < words)
     {
         if (ft_strlen(line->metaed[i]) != 0 && is_it_redirect(line->metaed[i]) == 0 && is_it_redirect(line->metaed[i + 1]) == 0)
-           return (syntax_error(line, line->metaed[i + 1], 3));
+		    return (syntax_error(line, line->metaed[i + 1], 3));
         i++;
     }
     if (ft_strlen(line->metaed[i]) != 0 && (ft_strncmp(line->metaed[i], "|", ft_strlen(line->metaed[i])) == 0 || \
         (is_it_redirect(line->metaed[i]) == 0)))
-        return (syntax_error(line, NULL, 4));
+		return (syntax_error(line, NULL, 4));
     trim_quotes(line);
-    i = 0;
-    here_doc(line);
     return (0);
 }
 

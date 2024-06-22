@@ -68,7 +68,7 @@ int	first_split(char *argv, t_mini *line)
 	// printf("elements = %d\n", words);
     line->element = (char **)malloc(sizeof(char *) * (words + 1));
     if (!line->element)
-        printf("zsh: Cannot allocate memory\n");
+		malloc_failure(line);
     first_splitting(argv, line);
 	return (0);
 }

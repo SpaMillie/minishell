@@ -33,7 +33,7 @@ void	second_splitting(t_mini *line)
 			}
 			line->metaed[k++] = ft_substr(line->element[i], prev_j, j - prev_j);
 		    if (line->metaed[k - 1] == NULL)
-                printf("malloc error\n");
+				malloc_failure(line);
 		}
 		i++;	
 	}
@@ -85,7 +85,7 @@ int	second_split(t_mini *line)
 	// printf("words are %d\n", words);
 	line->metaed = (char **)malloc(sizeof(char *) * (words + 1));
 	if (!line->metaed)
-		printf("zsh: Cannot allocate memory\n");
+		malloc_failure(line);
 	second_splitting(line);
 	return (words);
 }

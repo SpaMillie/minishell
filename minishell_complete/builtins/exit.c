@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mspasic <mspasic@student.hive.fi>          +#+  +:+       +#+        */
+/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:43:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/13 19:49:43 by mspasic          ###   ########.fr       */
+/*   Updated: 2024/06/18 15:36:30 by tparratt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	non_numeric_arg(char **args)
 	i = 0;
 	while (args[1][i])
 	{
-		if (!ft_isdigit(args[1][i]))
+		if (!ft_isdigit(args[1][i]) && args[1][i] != '+' && args[1][i] != '-')
 		{
 			print_error("numeric argument required", args);
 			exit(255);
@@ -39,7 +39,6 @@ void	exit_cmd(char **args, t_mini *line)
 	i = 0;
 	while (args[i])
 		i++;
-	printf("i is %d\n", i);
 	if (i > 2)
 	{
 		line->err_num = 1;
