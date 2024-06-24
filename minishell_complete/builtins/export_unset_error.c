@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_unset_error.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/19 12:06:43 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/19 12:08:43 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:24:06 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int	is_invalid_start_char(char c)
 static void	handle_error(t_mini *line, char **args)
 {
 	line->err_num = 1;
-	print_error("not a valid identifier", args);
+	print_error("Not a valid identifier", args);
 }
 
 int	export_unset_error_check(char **args, t_mini *line)

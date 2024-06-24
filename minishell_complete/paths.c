@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   paths.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 14:02:36 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/20 11:26:32 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:29:24 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,9 @@ char	*get_path(char **tokens, char **envp)
 	if (res)
 		return (res);
 	free_2d(paths);
-	print_error("command not found", tokens);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(tokens[0], 2);
+	ft_putendl_fd(": Command not found", 2);
+	tokens[0][0] = 9;
 	return (NULL);
 }

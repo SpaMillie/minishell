@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 14:43:38 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/18 15:36:30 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:23:57 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	non_numeric_arg(char **args)
 	{
 		if (!ft_isdigit(args[1][i]) && args[1][i] != '+' && args[1][i] != '-')
 		{
-			print_error("numeric argument required", args);
+			print_error("Numeric argument required", args);
 			exit(255);
 		}
 		i++;
@@ -42,7 +42,7 @@ void	exit_cmd(char **args, t_mini *line)
 	if (i > 2)
 	{
 		line->err_num = 1;
-		print_error("too many arguments", args);
+		print_error("Too many arguments", args);
 		return ;
 	}
 	else if (i > 1)

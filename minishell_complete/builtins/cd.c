@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 09:29:33 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/20 15:14:36 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:24:28 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static char	*cd_error_check(char **args, t_mini *line)
 	char	*old_pwd_path;
 
 	if (args[1] && args[2])
-		print_error("too many arguments", args);
+		print_error("Too many arguments", args);
 	old_pwd_path = getcwd(NULL, 0);
 	if (!old_pwd_path)
 	{

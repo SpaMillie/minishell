@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo-pwd-env.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:16:35 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/20 12:39:09 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:24:18 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	env(char **args, t_mini *line)
 	if (args[1])
 	{
 		line->err_num = 1;
-		print_error("too many arguments", args);
+		print_error("Too many arguments", args);
 	}
 	else
 	{

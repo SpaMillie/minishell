@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 10:18:20 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/20 15:26:09 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:10:55 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ void		malloc_failure(t_mini *line);
 void		void_malloc_failure(void);
 int			syntax_error(t_mini *line, char *s, int i);
 //execution.c
-void		builtin_execution(t_tokens *token, t_mini *line);
 void		execute(t_tokens *token, t_mini *line);
 //execution2.c
 void		single_builtin(t_tokens *token, t_mini *line, int *fd);
@@ -104,7 +103,7 @@ void		p_count(t_mini *line);
 //paths.c
 char		*get_path(char **tokens, char **envp);
 //redirect.c
-void		redirections(t_tokens *token);
+int			redirections(t_tokens *token);
 //second_split.c
 int			second_split(t_mini *line);
 //signals.c

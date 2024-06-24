@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+        */
+/*   By: milica <milica@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:06:44 by tparratt          #+#    #+#             */
-/*   Updated: 2024/06/20 15:28:09 by tparratt         ###   ########.fr       */
+/*   Updated: 2024/06/24 11:30:15 by milica           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	builtin_execution(t_tokens *token, t_mini *line)
-{
-	// if (line->i == line->pipe_num - 1)
-	// {
-		execute_builtin(&token[line->i], line); // Execute the built-in
-	//}
-}
 
 static int	parent(int in_fd, t_mini *line, int *fd)
 {
@@ -51,25 +43,32 @@ static int	child(t_tokens *token, t_mini *line, int in_fd, int *fd)
 	}
 	if (is_builtin(token[line->i].command[0]))
 	{
-		redirections(&token[line->i]);
-		builtin_execution(token, line); // Execute the built-in
+		execute_builtin(&token[line->i], line); // Execute the built-in
 		exit(line->err_num);
 	}
 	else
 	{
-		redirections(&token[line->i]);
 		if (execve(get_path(token[line->i].command, line->envp), token[line->i].command, line->envp) == -1)
 			exit(1);
 	}
 	return (in_fd);
 }
 
+static void	set_error(t_tokens *token, t_mini *line, int check)
+{
+	if (check == -1)
+		line->err_num = 1;
+	else if (token[line->i].command[0][0] == 9)
+		line->err_num = 127;
+	line->i++;
+}
 
 void	execute(t_tokens *token, t_mini *line)
 {
 	int		fd[2];
 	pid_t	pid;
 	int		in_fd;
+	int		check;
 
 	in_fd = dup(STDIN_FILENO);
 	line->i = 0;
@@ -86,9 +85,17 @@ void	execute(t_tokens *token, t_mini *line)
 		// 	line->i++; // Move to the next command in the pipeline
 		// 	continue ;
 		// }
+		check = redirections(&token[line->i]);
+		if (check != -1)
+			get_path(token[line->i].command, line->envp);
+		if (check == -1 || token[line->i].command[0][0] == 9)
+		{
+			set_error(token, line, check);
+			continue ;
+		}
 		pid = fork();
 		if (pid == -1)
-			exit(1);
+			exit(1); //fork failed
 		if (pid == 0)
 			in_fd = child(token, line, in_fd, fd);
 		else

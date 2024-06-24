@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tparratt <tparratt@student.42.fr>          +#+  +:+       +#+         #
+#    By: milica <milica@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/15 10:22:54 by tparratt          #+#    #+#              #
-#    Updated: 2024/06/20 15:27:39 by tparratt         ###   ########.fr        #
+#    Updated: 2024/06/24 09:45:32 by milica           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,13 +46,13 @@ CC			=	cc
 
 RM			=	rm -f
 
-CFLAGS		=	-I /Users/$(USER)/.brew/opt/readline/include/readline.h -Wextra -Wall -Werror -g -fsanitize=address
+CFLAGS		=	-I /usr/include/ -Wextra -Wall -Werror -g -fsanitize=address
 
-LDFLAGS 	=	-L /Users/$(USER)/.brew/opt/readline/lib
+# LDFLAGS 	=	-L /Users/$(USER)/.brew/opt/readline/lib
 
 $(NAME):	$(OBJ)
 			make -C ./libft
-			$(CC) $(CFLAGS) -g -o $(NAME) $(OBJ) $(LIBFT) $(LDFLAGS) -lreadline
+			$(CC) $(CFLAGS) -g -o $(NAME) $(OBJ) $(LIBFT) -lreadline
 
 all:		$(NAME)
 
